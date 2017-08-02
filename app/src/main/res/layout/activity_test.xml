@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fcf="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="#ffffff">
+
+    <RelativeLayout
+        android:layout_gravity="center_horizontal"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp">
+        <com.cvte.widget.gallery.FancyCoverFlow
+            android:id="@+id/fancyCoverFlow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            fcf:maxRotation="0"
+            fcf:scaleDownGravity="0.5"
+            fcf:unselectedAlpha="0.8"
+            fcf:unselectedScale="0.3"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/startBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开始抽奖"/>
+
+        <Button
+            android:id="@+id/stopBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止抽奖"/>
+
+        <Button
+            android:id="@+id/startFlipBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开始滑动"/>
+    </LinearLayout>
+
+</LinearLayout>

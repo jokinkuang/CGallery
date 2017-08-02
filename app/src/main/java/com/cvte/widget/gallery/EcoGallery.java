@@ -45,8 +45,9 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	/**
 	 * How long the transition animation should run when a child view changes
 	 * position, measured in milliseconds.
+	 * 切换效果时间，太短会看不到切换过程的渐变效果
 	 */
-	private int mAnimationDuration = 10;
+	private int mAnimationDuration = 800;
 
 	/**
 	 * The alpha of items that are not selected.

@@ -661,9 +661,10 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 
 		// bug: 不知道是怎么触发的，偶发地，初始化完毕第一次点击下一页会触发onlayout，从而导致在scroll过程重新布局中心view，
 		// 进而导致scroll的间距被缩短，无法滚动到下一页到bug。layout应该仅在selviewchanged时触发。scroll过程不触发。
+        // add：上一个办法无法修复，添加一个判断，仅在pos发生变化才设置选中。
 
 		// Update to the new selected position.
-		if (mNextSelectedPosition >= 0) {
+		if (mNextSelectedPosition >= 0 && mSelectedPosition != mNextSelectedPosition) {
 			Log.d(TAG, "2");
 			setSelectedPositionInt(mNextSelectedPosition);
 		}

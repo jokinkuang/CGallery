@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 
 public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.OnGestureListener {
 
-	private static final String TAG = "Gallery";
+	private static final String TAG = "CGallery";
 
 	private static final boolean localLOGV = true;
 
@@ -903,6 +903,9 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		if (mDownTouchPosition >= 0) {
 
 			// An item tap should make it selected, so scroll to this child.
+			if (localLOGV) {
+				Log.d(TAG, String.format("down:%d first:%d", mDownTouchPosition, mFirstPosition));
+			}
 			scrollToChild(mDownTouchPosition - mFirstPosition);
 
 			// Also pass the click so the client knows, if it wants to.
@@ -1013,6 +1016,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		mFlingRunnable.stop(false);
 
 		// Get the item's view that was touched
+		// 获取点击位置的View的坐标
 		mDownTouchPosition = pointToPosition((int) e.getX(), (int) e.getY());
 
 		if (mDownTouchPosition >= 0) {
@@ -1264,6 +1268,10 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 
 		if (child != null) {
 			int distance = getCenterOfGallery() - getCenterOfView(child);
+			if (localLOGV) {
+				Log.d(TAG, String.format("clickPos:%d, center:%d, childCenter:%d, distance:%d",
+						childPosition, getCenterOfGallery(), getCenterOfView(child), distance));
+			}
 			mFlingRunnable.startUsingDistance(distance);
 			return true;
 		}

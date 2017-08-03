@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
 
 public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<SpinnerAdapter> {
+    private static final String TAG = "EcoGalleryAbsSpinner";
+    private static final boolean VERB = true;
 
     SpinnerAdapter mAdapter;
 
@@ -344,16 +347,68 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
             frame = mTouchFrame;
         }
 
+        // 旧逻辑
+        // for (int i = 0; i <= count - 1; i++) {
+        //     View child = getChildAt(i);
+        //     if (child.getVisibility() == View.VISIBLE) {
+        //         child.getHitRect(frame);
+        //         if (frame.contains(x, y)) {
+        //             return mFirstPosition + i;
+        //         }
+        //     }
+        // }
+
+        // @bugfix 不是从尾到头遍历，而是从中间到两边，形成层级更高的优先响应
+        // 另：mSelectedPosition是逻辑下标，对应的childView下标需要做一下转换
         final int count = getChildCount();
-        for (int i = count - 1; i >= 0; i--) {
-            View child = getChildAt(i);
-            if (child.getVisibility() == View.VISIBLE) {
-                child.getHitRect(frame);
-                if (frame.contains(x, y)) {
-                    return mFirstPosition + i;
+        final int selectedViewLeft = getSelectedView().getLeft();
+        final int selectedViewRight = getSelectedView().getRight();
+        if (VERB) {
+            Log.d(TAG, String.format("count:%d, selected:%d, first:%d, left:%d, right:%d, x:%d, y:%d",
+                    count, mSelectedPosition, mFirstPosition, selectedViewLeft, selectedViewRight, x, y));
+        }
+
+        // click center
+        final View selectedView = getSelectedView();
+        if (selectedView != null) {
+            selectedView.getHitRect(frame);
+            if (frame.contains(x, y)) {
+                return mSelectedPosition;
+            }
+        }
+        // click left
+        if (x < selectedViewLeft) {
+            int childPos = mSelectedPosition - mFirstPosition;
+            for (int i = childPos; i >= 0 && i <= count - 1; i--) {
+                View child = getChildAt(i);
+                if (child.getVisibility() == View.VISIBLE) {
+                    child.getHitRect(frame);
+                    if (frame.contains(x, y)) {
+                        if (VERB) {
+                            Log.d(TAG, String.format("new selected i:%d, first:%d, pos:%d", i, mFirstPosition, mFirstPosition+i));
+                        }
+                        return mFirstPosition + i;
+                    }
                 }
             }
         }
+        // click right
+        else if (x > selectedViewRight) {
+            int childPos = mSelectedPosition - mFirstPosition;
+            for (int i = childPos; i >= 0 && i <= count - 1; i++) {
+                View child = getChildAt(i);
+                if (child.getVisibility() == View.VISIBLE) {
+                    child.getHitRect(frame);
+                    if (frame.contains(x, y)) {
+                        if (VERB) {
+                            Log.d(TAG, String.format("new selected i:%d, first:%d, pos:%d", i, mFirstPosition, mFirstPosition+i));
+                        }
+                        return mFirstPosition + i;
+                    }
+                }
+            }
+        }
+
         return INVALID_POSITION;
     }
 

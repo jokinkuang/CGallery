@@ -112,11 +112,20 @@ public class TestActivity extends Activity {
                 int len = adapter.getData().size();
 
                 // 使得所有的图像在[0.5, 1.5)*len之间，无限循环切换
-                // int first = len / 2, last = first + len;
-                // while (position < first)
-                //     position += len;
-                // while (position >= last)
-                //     position -= len;
+                boolean refresh = false;
+                int first = len / 2, last = first + len;
+                while (position < first) {
+                    position += len;
+                    refresh = true;
+                }
+                while (position >= last) {
+                    position -= len;
+                    refresh = true;
+                }
+                if (refresh) {
+                    fancyCoverFlow.setSelection(position);
+                    // adapter.notifyDataSetChanged();
+                }
 
                 // fancyCoverFlow.setSelection(position);
                 // adapter.notifyDataSetChanged();

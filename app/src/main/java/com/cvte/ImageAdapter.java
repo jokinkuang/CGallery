@@ -3,14 +3,19 @@ package com.cvte;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.cvte.widget.gallery.EcoGallery;
 import com.cvte.widget.gallery.FancyCoverFlowAdapter;
+import com.cvte.widget.gallery.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -35,7 +40,7 @@ public class ImageAdapter extends FancyCoverFlowAdapter {
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return filmList.size() * 2;
+		return filmList.size();
 	}
 
 	@Override
@@ -54,20 +59,41 @@ public class ImageAdapter extends FancyCoverFlowAdapter {
         return filmList;
     }
 
+    private static class ViewHolder {
+		private ImageView imageView;
+		private TextView textView;
+	}
+
 	@Override
 	public View getCoverFlowItem(int position, View reusableView,
 			ViewGroup parent) {
-		ImageView imageView = (ImageView) reusableView;
 
-		if (imageView == null) {
-			imageView = new ImageView(context);
+		ViewHolder viewHolder;
+		if (reusableView == null) {
+			reusableView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_item, parent, false);
+			reusableView.setLayoutParams(new EcoGallery.LayoutParams(180, 240));
+
+			viewHolder = new ViewHolder();
+			viewHolder.imageView = (ImageView) reusableView.findViewById(R.id.imgv);
+			viewHolder.textView = (TextView) reusableView.findViewById(R.id.tv);
+			reusableView.setTag(viewHolder);
+		} else {
+			viewHolder = (ViewHolder) reusableView.getTag();
 		}
+
 		// ps.电影海报宽高比例一般为3：4
-		imageView.setLayoutParams(new EcoGallery.LayoutParams(180, 240));
 		// 异步加载图片
+		ImageView imageView = viewHolder.imageView;
 		imageLoader.displayImage(filmList.get(position % filmList.size()), imageView, options);
-        imageView.setScaleType(ScaleType.CENTER_CROP);
-		return imageView;
+		imageView.setScaleType(ScaleType.CENTER_CROP);
+
+		TextView textView = viewHolder.textView;
+		textView.setBackgroundColor(Color.BLUE);
+		textView.setTextColor(Color.YELLOW);
+		textView.setTextSize(18);
+		textView.setText(String.valueOf(position));
+
+		return reusableView;
 
 
         // ImageView imageView = new ImageView(context);

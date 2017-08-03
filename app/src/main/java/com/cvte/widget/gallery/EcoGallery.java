@@ -3,6 +3,7 @@ package com.cvte.widget.gallery;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.icu.text.LocaleDisplayNames;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -47,7 +48,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	 * position, measured in milliseconds.
 	 * 切换效果时间，太短会看不到切换过程的渐变效果
 	 */
-	private int mAnimationDuration = 800;
+	private int mAnimationDuration = 400;
 
 	/**
 	 * The alpha of items that are not selected.
@@ -377,6 +378,9 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		boolean toLeft = deltaX < 0;
 
 		int limitedDeltaX = getLimitedMotionScrollAmount(toLeft, deltaX);
+		if (localLOGV) {
+			Log.d(TAG, String.format("limitedDeltaX:%d", limitedDeltaX));
+		}
 		if (limitedDeltaX != deltaX) {
 			// The above call returned a limited amount, so stop any
 			// scrolls/flings
@@ -520,6 +524,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	/**
 	 * Scrolls the items so that the selected item is in its 'slot' (its center
 	 * is the gallery's center).
+	 * 滚动到对应的槽
 	 */
 	private void scrollIntoSlots() {
 
@@ -530,6 +535,9 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		int targetCenter = getCenterOfGallery();
 
 		int scrollAmount = targetCenter - selectedCenter;
+		if (localLOGV) {
+			Log.d(TAG, String.format("selCenter:%d, tarCenter:%d, scrollAmount:%d", selectedCenter, targetCenter, scrollAmount));
+		}
 		if (scrollAmount != 0) {
 			mFlingRunnable.startUsingDistance(scrollAmount);
 		} else {
@@ -573,7 +581,13 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		int galleryCenter = getCenterOfGallery();
 
 		// Common case where the current selected position is correct
-		if (selView.getLeft() <= galleryCenter && selView.getRight() >= galleryCenter) {
+		// @bugfix 修复初始化第一次点击无法翻页到bug，将等号去掉，因为那一次layout前刚好到达边缘，可以提前设置到下一页。
+		// 如果无法修复，需要修改layout方法，在scroll过程不进行layout。
+		if (selView.getLeft() < galleryCenter && selView.getRight() > galleryCenter) {
+			if (localLOGV) {
+				Log.d(TAG, String.format("Center not changed! selViewLeft:%d, galleryCenter:%d, selViewRight:%d",
+						selView.getLeft(), galleryCenter, selView.getRight()));
+			}
 			return;
 		}
 
@@ -583,9 +597,16 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		for (int i = getChildCount() - 1; i >= 0; i--) {
 
 			View child = getChildAt(i);
-
+			if (localLOGV) {
+				Log.d(TAG, String.format("1 gallerycenter:%d, childLeft:%d, childRight:%d, newSelIndex:%d",
+						galleryCenter, child.getLeft(), child.getRight(), i));
+			}
 			if (child.getLeft() <= galleryCenter && child.getRight() >= galleryCenter) {
 				// This child is in the center
+				if (localLOGV) {
+					Log.d(TAG, String.format("2 Center change! gallerycenter:%d, childLeft:%d, childRight:%d, newSelIndex:%d",
+							galleryCenter, child.getLeft(), child.getRight(), i));
+				}
 				newSelectedChildIndex = i;
 				break;
 			}
@@ -598,9 +619,11 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 			}
 		}
 
+
 		int newPos = mFirstPosition + newSelectedChildIndex;
 
 		if (newPos != mSelectedPosition) {
+			Log.d(TAG, "1");
 			setSelectedPositionInt(newPos);
 			setNextSelectedPositionInt(newPos);
 			checkSelectionChanged();
@@ -620,12 +643,14 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	 */
 	@Override
 	void layout(int delta, boolean animate) {
-
+		if (localLOGV) {
+			Log.d(TAG, "layout!!!!!!!!");
+		}
 		int childrenLeft = mSpinnerPadding.left;
 		int childrenWidth = getRight() - getLeft() - mSpinnerPadding.left - mSpinnerPadding.right;
 
-		if (mDataChanged) {
-			handleDataChanged();
+        if (mDataChanged) {
+            handleDataChanged();
 		}
 
 		// Handle an empty gallery by removing all views.
@@ -634,8 +659,12 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 			return;
 		}
 
+		// bug: 不知道是怎么触发的，偶发地，初始化完毕第一次点击下一页会触发onlayout，从而导致在scroll过程重新布局中心view，
+		// 进而导致scroll的间距被缩短，无法滚动到下一页到bug。layout应该仅在selviewchanged时触发。scroll过程不触发。
+
 		// Update to the new selected position.
 		if (mNextSelectedPosition >= 0) {
+			Log.d(TAG, "2");
 			setSelectedPositionInt(mNextSelectedPosition);
 		}
 
@@ -1283,6 +1312,9 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	void setSelectedPositionInt(int position) {
 		super.setSelectedPositionInt(position);
 
+		if (localLOGV) {
+			Log.d(TAG, String.format("set selected:%d", position));
+		}
 		// Updates any metadata we keep about the selected item.
 		updateSelectedItemMetadata();
 	}
@@ -1292,6 +1324,11 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		View oldSelectedChild = mSelectedChild;
 
 		View child = mSelectedChild = getChildAt(mSelectedPosition - mFirstPosition);
+		if (localLOGV) {
+			Log.d(TAG, String.format("oldSel:%s newSel:%s",
+					oldSelectedChild == null ? "null" : String.valueOf(oldSelectedChild.hashCode()),
+					mSelectedChild == null ? "null" : String.valueOf(mSelectedChild.hashCode())));
+		}
 		if (child == null) {
 			return;
 		}
@@ -1335,19 +1372,21 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	protected int getChildDrawingOrder(int childCount, int i) {
 		int selectedIndex = mSelectedPosition - mFirstPosition;
 
-		// Just to be safe
-		if (selectedIndex < 0)
+		if (i < selectedIndex) {
+			LogIndex(i);
 			return i;
-
-		if (i == childCount - 1) {
-			// Draw the selected child last
-			return selectedIndex;
 		} else if (i >= selectedIndex) {
-			// Move the children to the right of the selected child earlier one
-			return i + 1;
+			LogIndex(childCount-1-i+selectedIndex);
+			return childCount - 1 - i + selectedIndex;
 		} else {
-			// Keep the children to the left of the selected child the same
+			LogIndex(i);
 			return i;
+		}
+	}
+
+	private void LogIndex(int i) {
+		if (localLOGV) {
+			// Log.d(TAG, String.format("draw i:%d", i));
 		}
 	}
 
@@ -1445,9 +1484,14 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 			boolean more = scroller.computeScrollOffset();
 			final int x = scroller.getCurrX();
 
+
 			// Flip sign to convert finger direction to list items direction
 			// (e.g. finger moving down means list is moving towards the top)
 			int delta = mLastFlingX - x;
+			if (localLOGV) {
+				Log.d(TAG, String.format("1 lastFling:%d, scroller_x:%d, delta:%d, more:%s",
+						mLastFlingX, x, delta, String.valueOf(more)));
+			}
 
 			// Pretend that each frame of a fling scroll is a touch scroll
 			if (delta > 0) {
@@ -1463,6 +1507,10 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 
 				// Don't fling more than 1 screen
 				delta = Math.max(-(getWidth() - getPaddingRight() - getPaddingLeft() - 1), delta);
+			}
+			if (localLOGV) {
+				Log.d(TAG, String.format("1 lastFling:%d, scroller_x:%d, delta:%d, more:%s",
+						mLastFlingX, x, delta, String.valueOf(more)));
 			}
 
 			trackMotionScroll(delta);

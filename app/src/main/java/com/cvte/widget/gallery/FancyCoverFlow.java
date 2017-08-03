@@ -318,17 +318,16 @@ public class FancyCoverFlow extends EcoGallery {
 	// 绘制顺序，先从左到中间，再从右到中间，绘制层叠效果
 	// @Override
 	// protected int getChildDrawingOrder(int childCount, int i) {
-    //
-	// 	int selectedIndex = getSelectedItemPosition()
-	// 			- getFirstVisiblePosition();
-    //
-	// 	if (i < selectedIndex) {
-	// 		return i;
-	// 	} else if (i >= selectedIndex) {
-	// 		return childCount - 1 - i + selectedIndex;
-	// 	} else {
-	// 		return i;
-	// 	}
+		// int selectedIndex = getSelectedItemPosition()
+		// 		- getFirstVisiblePosition();
+        //
+		// if (i < selectedIndex) {
+		// 	return i;
+		// } else if (i >= selectedIndex) {
+		// 	return childCount - 1 - i + selectedIndex;
+		// } else {
+		// 	return i;
+		// }
 	// }
 
 	private boolean isTouchAble = true;

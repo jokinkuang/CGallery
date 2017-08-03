@@ -2,6 +2,7 @@ package com.cvte.widget.gallery;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.icu.text.LocaleDisplayNames;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.util.AttributeSet;

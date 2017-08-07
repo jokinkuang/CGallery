@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Transformation;
@@ -74,7 +75,6 @@ public class FancyCoverFlow extends EcoGallery {
 
 	private void initialize() {
 		this.transformationCamera = new Camera();
-		// this.setSpacing(0);
 	}
 
 	private void applyXmlAttributes(AttributeSet attrs) {
@@ -240,8 +240,8 @@ public class FancyCoverFlow extends EcoGallery {
 		final int childWidth = item.getWidth();
 		final int childHeight = item.getHeight();
 		final int childCenter = item.getLeft() + childWidth / 2;
-		// Log.d(TAG, String.format("2 %d,%d, %d,%d,%d,%d, %d,%d", item.getWidth(), item.getHeight(),
-		// 		item.getLeft(), item.getRight(), item.getTop(), item.getBottom(), childCenter, coverFlowCenter));
+		Log.d(TAG, String.format("2 %d,%d, %d,%d,%d,%d, %d,%d", item.getWidth(), item.getHeight(),
+				item.getLeft(), item.getRight(), item.getTop(), item.getBottom(), childCenter, coverFlowCenter));
 
 		final int actionDistance = (this.actionDistance == ACTION_DISTANCE_AUTO) ? (int) ((coverFlowWidth + childWidth) / 2.0f)
 				: this.actionDistance;
@@ -309,8 +309,6 @@ public class FancyCoverFlow extends EcoGallery {
 				// Log.d(TAG, String.format("3 %f,%f %f,%f %d", effectsAmount, zoomAmount, translateX, translateY, ViewUtil.Dp2Px(getContext(), 0)));
 			}
 		}
-
-		// requestLayout();
 
 		return true;
 	}
@@ -386,5 +384,34 @@ public class FancyCoverFlow extends EcoGallery {
         return super.onFling(e1, e2, velocityX / 1.5f, velocityY);
 		// return super.onFling(e1, e2, velocityX / 2, velocityY);
 		// return false;
+	}
+
+	public void setListViewHeightBasedOnChildren() {
+
+		//获取listview的适配器
+		FancyCoverFlowAdapter listAdapter = (FancyCoverFlowAdapter) this.getAdapter(); //item的高度
+
+		if (listAdapter == null) {
+			return;
+		}
+		int totalHeight = 0;
+
+		// for (int i = 0; i < listAdapter.getCount(); i++) {
+		// 	View listItem = mAdapter.getView(i, null, this);
+        //
+		// 	listItem.measure(0, 0); //计算子项View 的宽高 //统计所有子项的总高度
+		// 	totalHeight += Dp2Px(getApplicationContext(),listItem.getMeasuredHeight());
+		// }
+		// ViewGroup.LayoutParams params = listView.getLayoutParams();
+        //
+		// params.height = totalHeight;
+		// listView.setLayoutParams(params);
+
+	}
+
+	public int Dp2Px(Context context, float dp) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+
+		return (int) (dp * scale + 0.5f);
 	}
 }

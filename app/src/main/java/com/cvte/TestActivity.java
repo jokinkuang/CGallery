@@ -20,6 +20,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -69,14 +70,50 @@ public class TestActivity extends Activity {
     private static int MSG_UPDATE = 1;
     // 定时任务
     private ScheduledExecutorService scheduledExecutorService;
+    private int start = 10;
+    private int time = 800;
+    private int sleep = 80;
+    private boolean stop = false;
 
+
+    private void reset() {
+        start = 10;
+        time = 1000;
+        sleep = 80;
+    }
     // 通过handler来更新主界面
     private Handler handler = new Handler() {
 
         public void handleMessage(Message msg) {
             if (msg.what == MSG_UPDATE) {
                 // fancyCoverFlow.setSelection(cur_index, true);
-                fancyCoverFlow.moveToNext();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                            // fancyCoverFlow.moveToNext(time);
+
+                        //     while (!stop) {
+                    //         int rand = new Random().nextInt(14);
+                    //         Log.d("CGallery", String.format("rand:%d", rand));
+                    //     fancyCoverFlow.moveToNext(start);
+                            if (start <= 1000) {
+                                start += 10;
+                            }
+                    //         if (time >= 10) {
+                    //             time /= 2;
+                    //         }
+                    //         if (sleep >= 10) {
+                    //             sleep -= 1;
+                    //         }
+                    //         try {
+                    //             Thread.sleep(sleep);
+                    //         } catch (InterruptedException e) {
+                    //             break;
+                    //         }
+                    //     }
+                    }
+                }).start();
+
             }
         }
     };
@@ -99,8 +136,15 @@ public class TestActivity extends Activity {
         fancyCoverFlow.setOnMoveListener(new EcoGalleryAdapterView.OnMoveListener() {
             @Override
             public void onMoveFinish(EcoGalleryAdapterView<?> parent, View view, int position, long id) {
-                fancyCoverFlow.moveToNext();
+                // Message msg = handler.obtainMessage(MSG_UPDATE);
+                // handler.sendMessage(msg);
+                // fancyCoverFlow.moveToNext(2000, 10);
+
                 Log.d("", "moveFinish");
+                // fancyCoverFlow.moveToNext(time);
+                //         if (time > 50) {
+                //             time /= 1.2;
+                //         }
                 // fancyCoverFlow.startFling();
             }
         });
@@ -110,27 +154,27 @@ public class TestActivity extends Activity {
             @Override
             public void onItemSelected(EcoGalleryAdapterView<?> parent, View view, int position, long id) {
                 int len = adapter.getData().size();
+                Log.d("Gallery", "1 cur index:"+position);
 
                 // 使得所有的图像在[0.5, 1.5)*len之间，无限循环切换
                 boolean refresh = false;
-                int first = len / 2, last = first + len;
-                while (position < first) {
-                    position += len;
-                    refresh = true;
-                }
-                while (position >= last) {
-                    position -= len;
-                    refresh = true;
-                }
-                if (refresh) {
-                    fancyCoverFlow.setSelection(position);
-                    // adapter.notifyDataSetChanged();
-                }
+                // int first = len / 2, last = first + len;
+                // while (position < first) {
+                //     position += len;
+                //     refresh = true;
+                // }
+                // while (position >= last) {
+                //     position -= len;
+                //     refresh = true;
+                // }
+                // if (refresh) {
+                //     fancyCoverFlow.setSelection(position);
+                // }
 
                 // fancyCoverFlow.setSelection(position);
                 // adapter.notifyDataSetChanged();
                 cur_index = position;
-                Log.d("Gallery", "cur index:"+cur_index);
+                Log.d("Gallery", "2 cur index:"+cur_index);
             }
 
             @Override
@@ -170,9 +214,6 @@ public class TestActivity extends Activity {
 
             @Override
             public void onItemClick(EcoGalleryAdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(TestActivity.this,
-                        ListInfo.getNameInfo().get(position % ListInfo.getfilmInfo().size()),
-                        Toast.LENGTH_SHORT).show();
 
             }
 
@@ -180,22 +221,26 @@ public class TestActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // TODO Auto-generated method stub
-                Toast.makeText(TestActivity.this,
-                        ListInfo.getNameInfo().get(position % ListInfo.getfilmInfo().size()),
-                        Toast.LENGTH_SHORT).show();
             }
         });
 
         findViewById(R.id.startBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fancyCoverFlow.moveToNext();
+                // fancyCoverFlow.moveToNext(start);
+                // startPlay();
+                stop = false;
+                Message msg = handler.obtainMessage(MSG_UPDATE);
+                handler.sendMessage(msg);
             }
         });
 
         findViewById(R.id.stopBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // stopPlay();
+                stop = true;
+                reset();
                 fancyCoverFlow.stop();
             }
         });
@@ -212,6 +257,7 @@ public class TestActivity extends Activity {
         count_drawble = adapter.getCount();
         // startPlay();
         // fancyCoverFlow.startFling();
+        // fancyCoverFlow.setSelection(Integer.MAX_VALUE/2);
 
 
     }
@@ -221,7 +267,7 @@ public class TestActivity extends Activity {
      */
     private void startPlay() {
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleAtFixedRate(new AutoPlayTask(), 1, 64,
+        scheduledExecutorService.scheduleAtFixedRate(new AutoPlayTask(), 1, 400,
                 TimeUnit.MICROSECONDS);
     }
 

@@ -40,13 +40,17 @@ public class ImageAdapter extends FancyCoverFlowAdapter {
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
+		// return Integer.MAX_VALUE;	// 2147483648 够1w张照片循环了。
 		return filmList.size();
 	}
+	//
+	// 中心作为0点：Integer.MAX_VALUE／2
+	//
 
 	@Override
 	public Object getItem(int position) {
 		// TODO Auto-generated method stub
-		return filmList.get(position);
+		return filmList.get(position % filmList.size());
 	}
 
 	@Override
@@ -71,7 +75,7 @@ public class ImageAdapter extends FancyCoverFlowAdapter {
 		ViewHolder viewHolder;
 		if (reusableView == null) {
 			reusableView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_item, parent, false);
-			reusableView.setLayoutParams(new EcoGallery.LayoutParams(180, 240));
+			reusableView.setLayoutParams(new EcoGallery.LayoutParams(240, 240));
 
 			viewHolder = new ViewHolder();
 			viewHolder.imageView = (ImageView) reusableView.findViewById(R.id.imgv);

@@ -245,39 +245,12 @@ class FancyCoverFlowItemWrapper extends ViewGroup {
 			// factor.
 			final int originalChildWidth = this.getMeasuredWidth();
 			final int originalChildHeight = this.getMeasuredHeight();
-			// int childWidth = originalChildWidth;
-			// int childHeight = originalChildHeight;
 			this.originalScaledownFactor = this.isReflectionEnabled ? (originalChildHeight
 					* (1 - this.imageReflectionRatio) - reflectionGap)
 					/ originalChildHeight
 					: 1.0f;
 			final int childHeight = (int) (this.originalScaledownFactor * originalChildHeight);
 			final int childWidth = (int) (this.originalScaledownFactor * getMeasuredWidth());
-			// if (gallery != null) {
-			// 	final int coverFlowWidth = gallery.getWidth();
-			// 	final int coverFlowCenter = coverFlowWidth / 2;
-			// 	final int childCenter = child.getLeft() + childWidth / 2;
-			// 	final int actionDistance = (gallery.getActionDistance() == FancyCoverFlow.ACTION_DISTANCE_AUTO) ?
-			// 			(int) ((coverFlowWidth + childWidth) / 2.0f)
-			// 			: gallery.getActionDistance();
-			// 	Log.d("Gallery1", "galleryWidth:"+coverFlowWidth+
-			// 			",galleryCenter:"+coverFlowCenter+",actionDistance:"+actionDistance);
-            //
-			// 	float effectsAmount = Math.min(
-			// 			1.0f,
-			// 			Math.max(-1.0f, (1.0f / actionDistance)
-			// 					* (childCenter - coverFlowCenter)));
-            //
-			// 	// 缩放.
-			// 	if (gallery.getUnselectedScale() != 1) {
-			// 		final float zoomAmount = 1f / 2f * (1 - Math.abs(effectsAmount))
-			// 				* (1 - Math.abs(effectsAmount))
-			// 				* (1 - Math.abs(effectsAmount)) + 0.5f;
-			// 		childWidth *= zoomAmount;
-			// 		childHeight *= zoomAmount;
-			// 		Log.d("Gallery", "xwidth:"+childWidth+",xheight:"+childHeight);
-			// 	}
-			// }
 			int heightSpec = MeasureSpec.makeMeasureSpec(childHeight,
 					MeasureSpec.AT_MOST);
 			int widthSpec = MeasureSpec.makeMeasureSpec(childWidth,

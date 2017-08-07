@@ -15,8 +15,8 @@ public class ListInfo {
 			"http://img31.mtime.cn/mg/2014/09/30/145438.41392832_270X405X4.jpg",
 			"http://img31.mtime.cn/mg/2014/09/09/095439.24895990_270X405X4.jpg",
 			"http://img31.mtime.cn/mg/2014/10/13/151034.85474901_270X405X4.jpg",
-			"http://img31.mtime.cn/mg/2014/09/23/084444.96794628_270X405X4.jpg",
-			"http://img31.mtime.cn/mg/2014/08/15/104026.33444853_270X405X4.jpg",
+			// "http://img31.mtime.cn/mg/2014/09/23/084444.96794628_270X405X4.jpg",
+			// "http://img31.mtime.cn/mg/2014/08/15/104026.33444853_270X405X4.jpg",
 			"http://img31.mtime.cn/mg/2014/09/26/151251.44963343_270X405X4.jpg"
 
 	};

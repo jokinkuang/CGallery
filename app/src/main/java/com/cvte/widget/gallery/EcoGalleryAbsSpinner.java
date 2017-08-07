@@ -220,6 +220,9 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
         setMeasuredDimension(widthSize, heightSize);
         mHeightMeasureSpec = heightMeasureSpec;
         mWidthMeasureSpec = widthMeasureSpec;
+        if (VERB) {
+            Log.d(TAG, String.format("width:%d, height:%d", widthSize, heightSize));
+        }
     }
 
 
@@ -358,6 +361,18 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
         //     }
         // }
 
+
+
+        // click center
+        final View selectedView = getSelectedView();
+        if (selectedView == null) {
+            return INVALID_POSITION;
+        }
+        selectedView.getHitRect(frame);
+        if (frame.contains(x, y)) {
+            return mSelectedPosition;
+        }
+
         // @bugfix 不是从尾到头遍历，而是从中间到两边，形成层级更高的优先响应
         // 另：mSelectedPosition是逻辑下标，对应的childView下标需要做一下转换
         final int count = getChildCount();
@@ -368,14 +383,6 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
                     count, mSelectedPosition, mFirstPosition, selectedViewLeft, selectedViewRight, x, y));
         }
 
-        // click center
-        final View selectedView = getSelectedView();
-        if (selectedView != null) {
-            selectedView.getHitRect(frame);
-            if (frame.contains(x, y)) {
-                return mSelectedPosition;
-            }
-        }
         // click left
         if (x < selectedViewLeft) {
             int childPos = mSelectedPosition - mFirstPosition;

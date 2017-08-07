@@ -361,7 +361,12 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		return child.getMeasuredHeight();
 	}
 
-	/**
+    @Override
+    int getChildWidth(View child) {
+        return child.getMeasuredWidth();
+    }
+
+    /**
 	 * Tracks a motion scroll. In reality, this is used to do just about any
 	 * movement to items (touch scroll, arrow-key scroll, set an item as
 	 * selected).
@@ -394,6 +399,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 
 		if (toLeft) {
 			// If moved left, there will be empty space on the right
+			Log.d(TAG, "1 fillto");
 			fillToGalleryRight();
 		} else {
 			// Similarly, empty space on the left
@@ -493,6 +499,8 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 			final int galleryLeft = getPaddingLeft();
 			for (int i = 0; i < numChildren; i++) {
 				final View child = getChildAt(i);
+				Log.d(TAG, String.format("numChild:%d index:%d, right:%d, left:%d",
+						numChildren, i, child.getRight(), galleryLeft));
 				if (child.getRight() >= galleryLeft) {
 					break;
 				} else {
@@ -514,6 +522,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 			}
 		}
 
+		Log.d(TAG, String.format("firstPosition:%d start:%d, count:%d", firstPosition, start, count));
 		detachViewsFromParent(start, count);
 
 		if (toLeft) {
@@ -553,6 +562,9 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 			super.selectionChanged();
 		}
 		mSelectedCenterOffset = 0;
+
+        // updateWidth();
+
 		invalidate();
 
         // Only op move would cause the callback
@@ -617,11 +629,19 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 				closestEdgeDistance = childClosestEdgeDistance;
 				newSelectedChildIndex = i;
 			}
+			if (localLOGV) {
+				Log.d(TAG, String.format("childClosestEdgeDistance:%d, childLeft:%d, childRight:%d, galleryCenter:%d, newSel:%d",
+						childClosestEdgeDistance, child.getLeft(), child.getRight(), galleryCenter, newSelectedChildIndex));
+			}
 		}
+
 
 
 		int newPos = mFirstPosition + newSelectedChildIndex;
 
+		if (localLOGV) {
+			Log.d(TAG, String.format("first:%d, newIndex:%d newPos:%d", mFirstPosition, newSelectedChildIndex, newPos));
+		}
 		if (newPos != mSelectedPosition) {
 			Log.d(TAG, "1");
 			setSelectedPositionInt(newPos);
@@ -695,6 +715,8 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		int selectedOffset = childrenLeft + (childrenWidth / 2) - (sel.getWidth() / 2);
 		sel.offsetLeftAndRight(selectedOffset);
 
+		Log.d(TAG, "2 fillto");
+
 		fillToGalleryRight();
 		fillToGalleryLeft();
 
@@ -709,7 +731,32 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		setNextSelectedPositionInt(mSelectedPosition);
 
 		updateSelectedItemMetadata();
-	}
+
+        if (mFirstLayout) {
+            updateWidth();
+            mFirstLayout = false;
+        }
+    }
+
+
+	private boolean mFirstLayout = true;
+	private int mWidth;
+	private void updateWidth() {
+        View theMaxChild = getChildAt(mSelectedPosition-mFirstPosition+(3/2));
+        if (theMaxChild == null) {
+            return;
+        }
+        int width = (theMaxChild.getRight() - getCenterOfGallery())*2;
+        Log.d(TAG, String.format("gallery center:%d, maxchildRight:%d, width:%d", theMaxChild.getRight(), getCenterOfGallery(), width));
+        if (mWidth == width) {
+            return;
+        }
+        mWidth = width;
+
+        ViewGroup.LayoutParams params = getLayoutParams();
+        params.width = width;
+        setLayoutParams(params);
+    }
 
 	private void fillToGalleryLeft() {
 		int itemSpacing = mSpacing;
@@ -748,20 +795,28 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		int numChildren = getChildCount();
 		int numItems = mItemCount;
 
+
 		// Set state for initial iteration
 		View prevIterationView = getChildAt(numChildren - 1);
 		int curPosition;
 		int curLeftEdge;
 
+		if (localLOGV) {
+			Log.d(TAG, String.format("numChildren:%d, numItems:%d, prevView:%s",
+					numChildren, numItems, prevIterationView == null ? "null!!!!" : prevIterationView));
+		}
+
 		if (prevIterationView != null) {
 			curPosition = mFirstPosition + numChildren;
 			curLeftEdge = prevIterationView.getRight() + itemSpacing;
 		} else {
-			mFirstPosition = curPosition = mItemCount - 1;
+			curPosition = mFirstPosition + numChildren;
+			// mFirstPosition = curPosition = mItemCount - 1;
 			curLeftEdge = getPaddingLeft();
-			mShouldStopFling = true;
+			// mShouldStopFling = true;
 		}
 
+		// recreate
 		while (curLeftEdge < galleryRight && curPosition < numItems) {
 			prevIterationView = makeAndAddView(curPosition, curPosition - mSelectedPosition, curLeftEdge, true);
 

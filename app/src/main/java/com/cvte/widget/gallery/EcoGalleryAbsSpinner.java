@@ -21,6 +21,7 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
 
     SpinnerAdapter mAdapter;
 
+    public boolean mCollapsing = false;
     int mHeightMeasureSpec;
     int mWidthMeasureSpec;
     boolean mBlockLayoutRequests;
@@ -148,81 +149,134 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize;
-        int heightSize;
+        // int widthSize = 0;
+        // int heightSize = 0;
+        //
+        // int paddingLeft = getPaddingLeft();
+        // int paddingRight = getPaddingRight();
+        // int paddingTop = getPaddingTop();
+        // int paddingBottom = getPaddingBottom();
+        //
+        // mSpinnerPadding.left = paddingLeft > mSelectionLeftPadding ? paddingLeft
+        //         : mSelectionLeftPadding;
+        // mSpinnerPadding.top = paddingTop > mSelectionTopPadding ? paddingTop
+        //         : mSelectionTopPadding;
+        // mSpinnerPadding.right = paddingRight > mSelectionRightPadding ? paddingRight
+        //         : mSelectionRightPadding;
+        // mSpinnerPadding.bottom = paddingBottom > mSelectionBottomPadding ? paddingBottom
+        //         : mSelectionBottomPadding;
+        //
+        // int preferredHeight = 0;
+        // int preferredWidth = 0;
+        //
+        // final int size = getChildCount();
+        // for (int i = 0; i < size; ++i) {
+        //     final View child = getChildAt(i);
+        //     if (child.getVisibility() != GONE) {
+        //         // 测量单个视图
+        //         measureChild(child, widthMeasureSpec, heightMeasureSpec);
+        //         child.setTag(, i);
+        //         preferredHeight = getChildHeight(child);
+        //         preferredWidth = getChildWidth(child);
+        //
+        //         preferredHeight += mSpinnerPadding.top + mSpinnerPadding.bottom;
+        //         preferredWidth += mSpinnerPadding.left + mSpinnerPadding.right;
+        //
+        //         preferredHeight = Math.max(preferredHeight, getSuggestedMinimumHeight());
+        //         preferredWidth = Math.max(preferredWidth, getSuggestedMinimumWidth());
+        //
+        //         heightSize = resolveSize(preferredHeight, heightMeasureSpec);
+        //         widthSize += resolveSize(preferredWidth, widthMeasureSpec);
+        //         Log.d(TAG, String.format("preferHeightSize:%d, preferWidthSize:%d", preferredHeight, preferredWidth));
+        //     }
+        // }
+        //
+        // // heightSize = resolveSize(preferredHeight, heightMeasureSpec);
+        // // widthSize += resolveSize(preferredWidth, widthMeasureSpec);
+        //
+        // Log.d(TAG, String.format("HeightSize:%d, WidthSize:%d", heightSize, widthSize));
+        //
+        // setMeasuredDimension(widthSize, heightSize);
+        // mHeightMeasureSpec = heightMeasureSpec;
+        // mWidthMeasureSpec = widthMeasureSpec;
 
-        int paddingLeft = getPaddingLeft();
-        int paddingRight = getPaddingRight();
-        int paddingTop = getPaddingTop();
-        int paddingBottom = getPaddingBottom();
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        mSpinnerPadding.left = paddingLeft > mSelectionLeftPadding ? paddingLeft
-                : mSelectionLeftPadding;
-        mSpinnerPadding.top = paddingTop > mSelectionTopPadding ? paddingTop
-                : mSelectionTopPadding;
-        mSpinnerPadding.right = paddingRight > mSelectionRightPadding ? paddingRight
-                : mSelectionRightPadding;
-        mSpinnerPadding.bottom = paddingBottom > mSelectionBottomPadding ? paddingBottom
-                : mSelectionBottomPadding;
-
-        if (mDataChanged) {
-            handleDataChanged();
-        }
-
-        int preferredHeight = 0;
-        int preferredWidth = 0;
-        boolean needsMeasuring = true;
-
-        int selectedPosition = getSelectedItemPosition();
-        if (selectedPosition >= 0 && mAdapter != null) {
-            // Try looking in the recycler. (Maybe we were measured once already)
-            View view = mRecycler.get();
-            if (view == null) {
-                // Make a new one
-                view = mAdapter.getView(selectedPosition, null, this);
-            }
-
-            if (view != null) {
-                // Put in recycler for re-measuring and/or layout
-                mRecycler.add(selectedPosition, view);
-            }
-
-            if (view != null) {
-                if (view.getLayoutParams() == null) {
-                    mBlockLayoutRequests = true;
-                    view.setLayoutParams(generateDefaultLayoutParams());
-                    mBlockLayoutRequests = false;
-                }
-                measureChild(view, widthMeasureSpec, heightMeasureSpec);
-
-                preferredHeight = getChildHeight(view) + mSpinnerPadding.top + mSpinnerPadding.bottom;
-                preferredWidth = getChildWidth(view) + mSpinnerPadding.left + mSpinnerPadding.right;
-
-                needsMeasuring = false;
-            }
-        }
-
-        if (needsMeasuring) {
-            // No views -- just use padding
-            preferredHeight = mSpinnerPadding.top + mSpinnerPadding.bottom;
-            if (widthMode == View.MeasureSpec.UNSPECIFIED) {
-                preferredWidth = mSpinnerPadding.left + mSpinnerPadding.right;
-            }
-        }
-
-        preferredHeight = Math.max(preferredHeight, getSuggestedMinimumHeight());
-        preferredWidth = Math.max(preferredWidth, getSuggestedMinimumWidth());
-
-        heightSize = resolveSize(preferredHeight, heightMeasureSpec);
-        widthSize = resolveSize(preferredWidth, widthMeasureSpec);
-
-        setMeasuredDimension(widthSize, heightSize);
-        mHeightMeasureSpec = heightMeasureSpec;
-        mWidthMeasureSpec = widthMeasureSpec;
-        if (VERB) {
-            Log.d(TAG, String.format("width:%d, height:%d", widthSize, heightSize));
-        }
+        // int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
+        // int widthSize;
+        // int heightSize;
+        //
+        // int paddingLeft = getPaddingLeft();
+        // int paddingRight = getPaddingRight();
+        // int paddingTop = getPaddingTop();
+        // int paddingBottom = getPaddingBottom();
+        //
+        // mSpinnerPadding.left = paddingLeft > mSelectionLeftPadding ? paddingLeft
+        //         : mSelectionLeftPadding;
+        // mSpinnerPadding.top = paddingTop > mSelectionTopPadding ? paddingTop
+        //         : mSelectionTopPadding;
+        // mSpinnerPadding.right = paddingRight > mSelectionRightPadding ? paddingRight
+        //         : mSelectionRightPadding;
+        // mSpinnerPadding.bottom = paddingBottom > mSelectionBottomPadding ? paddingBottom
+        //         : mSelectionBottomPadding;
+        //
+        // if (mDataChanged) {
+        //     handleDataChanged();
+        // }
+        //
+        // int preferredHeight = 0;
+        // int preferredWidth = 0;
+        // boolean needsMeasuring = true;
+        //
+        // int selectedPosition = getSelectedItemPosition();
+        // if (selectedPosition >= 0 && mAdapter != null) {
+        //     // Try looking in the recycler. (Maybe we were measured once already)
+        //     View view = mRecycler.get();
+        //     if (view == null) {
+        //         // Make a new one
+        //         view = mAdapter.getView(selectedPosition, null, this);
+        //     }
+        //
+        //     if (view != null) {
+        //         // Put in recycler for re-measuring and/or layout
+        //         mRecycler.add(selectedPosition, view);
+        //     }
+        //
+        //     if (view != null) {
+        //         if (view.getLayoutParams() == null) {
+        //             mBlockLayoutRequests = true;
+        //             view.setLayoutParams(generateDefaultLayoutParams());
+        //             mBlockLayoutRequests = false;
+        //         }
+        //         measureChild(view, widthMeasureSpec, heightMeasureSpec);
+        //
+        //         preferredHeight = getChildHeight(view) + mSpinnerPadding.top + mSpinnerPadding.bottom;
+        //         preferredWidth = getChildWidth(view) + mSpinnerPadding.left + mSpinnerPadding.right;
+        //
+        //         needsMeasuring = false;
+        //     }
+        // }
+        //
+        // if (needsMeasuring) {
+        //     // No views -- just use padding
+        //     preferredHeight = mSpinnerPadding.top + mSpinnerPadding.bottom;
+        //     if (widthMode == View.MeasureSpec.UNSPECIFIED) {
+        //         preferredWidth = mSpinnerPadding.left + mSpinnerPadding.right;
+        //     }
+        // }
+        //
+        // preferredHeight = Math.max(preferredHeight, getSuggestedMinimumHeight());
+        // preferredWidth = Math.max(preferredWidth, getSuggestedMinimumWidth());
+        //
+        // heightSize = resolveSize(preferredHeight, heightMeasureSpec);
+        // widthSize = resolveSize(preferredWidth, widthMeasureSpec);
+        //
+        // setMeasuredDimension(widthSize, heightSize);
+        // mHeightMeasureSpec = heightMeasureSpec;
+        // mWidthMeasureSpec = widthMeasureSpec;
+        // if (VERB) {
+        //     Log.d(TAG, String.format("width:%d, height:%d", widthSize, heightSize));
+        // }
     }
 
 

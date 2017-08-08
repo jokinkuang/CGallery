@@ -351,7 +351,9 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		 * being generated.
 		 */
 		mInLayout = true;
-		layout(0, false);
+        if (! mCollapsing) {
+            layout(0, false);
+        }
 
 		mInLayout = false;
 	}
@@ -726,23 +728,26 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		invalidate();
 		checkSelectionChanged();
 
+		// FirstTime or DataChanged
+		if (mFirstLayout || mDataChanged) {
+			updateWidth();
+			updateHeight();
+			mFirstLayout = false;
+		}
+
 		mDataChanged = false;
 		mNeedSync = false;
 		setNextSelectedPositionInt(mSelectedPosition);
 
 		updateSelectedItemMetadata();
-
-        if (mFirstLayout) {
-            updateWidth();
-            mFirstLayout = false;
-        }
     }
 
 
 	private boolean mFirstLayout = true;
 	private int mWidth;
+	private int mHeight;
 	private void updateWidth() {
-        View theMaxChild = getChildAt(mSelectedPosition-mFirstPosition+(3/2));
+        View theMaxChild = getChildAt(mSelectedPosition-mFirstPosition+(7/2));
         if (theMaxChild == null) {
             return;
         }
@@ -757,6 +762,21 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
         params.width = width;
         setLayoutParams(params);
     }
+    private void updateHeight() {
+		View centerView = getChildAt(mSelectedPosition-mFirstPosition);
+		if (centerView == null) {
+			return;
+		}
+		int height = centerView.getHeight();
+		if (mHeight == height) {
+			return;
+		}
+		mHeight = height;
+
+		ViewGroup.LayoutParams params = getLayoutParams();
+		params.height = height;
+		setLayoutParams(params);
+	}
 
 	private void fillToGalleryLeft() {
 		int itemSpacing = mSpacing;
@@ -1341,11 +1361,10 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
     }
 
     public void stop() {
-		// Kill any existing fling/scroll
-		mFlingRunnable.stop(false);
+		// Kill any existing fling/scroll and slot into center
+		mFlingRunnable.stop(true);
         mOpMoving = false;
         mOpFliping = false;
-        setSelectionToCenterChild();
     }
 
 	private boolean scrollToChild(int childPosition) {

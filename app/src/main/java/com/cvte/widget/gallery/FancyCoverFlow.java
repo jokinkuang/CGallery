@@ -1,5 +1,8 @@
 package com.cvte.widget.gallery;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -11,7 +14,14 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
+import android.view.animation.TranslateAnimation;
 import android.widget.SpinnerAdapter;
 
 public class FancyCoverFlow extends EcoGallery {
@@ -222,10 +232,255 @@ public class FancyCoverFlow extends EcoGallery {
 	// 	return ret;
 	// }
 
+
+	/**
+	 * @see View#measure(int, int)
+	 *
+	 * Figure out the dimensions of this Spinner. The width comes from
+	 * the widthMeasureSpec as Spinnners can't have their width set to
+	 * UNSPECIFIED. The height is based on the height of the selected item
+	 * plus padding.
+	 */
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		// int widthSize = 0;
+		// int heightSize = 0;
+        //
+		// int paddingLeft = getPaddingLeft();
+		// int paddingRight = getPaddingRight();
+		// int paddingTop = getPaddingTop();
+		// int paddingBottom = getPaddingBottom();
+        //
+		// mSpinnerPadding.left = paddingLeft > mSelectionLeftPadding ? paddingLeft
+		// 		: mSelectionLeftPadding;
+		// mSpinnerPadding.top = paddingTop > mSelectionTopPadding ? paddingTop
+		// 		: mSelectionTopPadding;
+		// mSpinnerPadding.right = paddingRight > mSelectionRightPadding ? paddingRight
+		// 		: mSelectionRightPadding;
+		// mSpinnerPadding.bottom = paddingBottom > mSelectionBottomPadding ? paddingBottom
+		// 		: mSelectionBottomPadding;
+        //
+		// int preferredHeight = 0;
+		// int preferredWidth = 0;
+        //
+		// final int size = getChildCount();
+		// for (int i = 0; i < size; ++i) {
+		// 	final View child = getChildAt(i);
+		// 	if (child.getVisibility() != GONE) {
+		// 		// 测量单个视图
+		// 		measureChild(child, widthMeasureSpec, heightMeasureSpec);
+		// 		preferredHeight = getChildHeight(child);
+		// 		preferredWidth = getChildWidth(child);
+        //
+		// 		preferredHeight += mSpinnerPadding.top + mSpinnerPadding.bottom;
+		// 		preferredWidth += mSpinnerPadding.left + mSpinnerPadding.right;
+        //
+		// 		preferredHeight = Math.max(preferredHeight, getSuggestedMinimumHeight());
+		// 		preferredWidth = Math.max(preferredWidth, getSuggestedMinimumWidth());
+        //
+		// 		heightSize = resolveSize(preferredHeight, heightMeasureSpec);
+		// 		widthSize += resolveSize(preferredWidth, widthMeasureSpec);
+		// 		Log.d(TAG, String.format("preferHeightSize:%d, preferWidthSize:%d", preferredHeight, preferredWidth));
+		// 	}
+		// }
+        //
+		// // heightSize = resolveSize(preferredHeight, heightMeasureSpec);
+		// // widthSize += resolveSize(preferredWidth, widthMeasureSpec);
+        //
+		// Log.d(TAG, String.format("HeightSize:%d, WidthSize:%d", heightSize, widthSize));
+        //
+		// setMeasuredDimension(getPreferredWidth(5), heightSize);
+		// mHeightMeasureSpec = heightMeasureSpec;
+		// mWidthMeasureSpec = widthMeasureSpec;
+	}
+
+	private static final int Size = 300;
+	private static final int EffectDistance = Size * 5;
+
+	private int getPreferredWidth(int num) {
+		int preferredWidth = 0;
+		for (int i = 0; i < num; ++i) {
+			float effectsAmount = Math.min(
+					1.0f,
+					Math.max(-1.0f, (1.0f / EffectDistance / 2) * (Size*i)));
+
+			// 距离中心越远，缩放越小
+			final float zoomAmount = 1f / 2f * (1 - Math.abs(effectsAmount))
+					* (1 - Math.abs(effectsAmount))
+					* (1 - Math.abs(effectsAmount)) + 0.5f;
+
+			double point = 0.4;
+			double translateFactor = (-1f / (point * point)
+					* (Math.abs(effectsAmount) - point)
+					* (Math.abs(effectsAmount) - point) + 1)
+					* (effectsAmount > 0 ? 1 : -1);
+
+			// 约靠近中心，间距越短，间距最大为25dp
+			int gap = (int) (ViewUtil.Dp2Px(getContext(), 30) * translateFactor);
+			int width = (int) (Size*zoomAmount);
+
+			Log.d(TAG, String.format("effect:%f, zoom:%f, gap:%d, width:%d", effectsAmount, zoomAmount, gap, width));
+			preferredWidth += (Size*zoomAmount);
+		}
+
+		Log.d(TAG, String.format("preferredWidth:%d", preferredWidth));
+		return preferredWidth;
+	}
+
+
+	public void startCollapse() {
+        mCollapsing = true;
+
+		int selPos = mSelectedPosition - mFirstPosition;
+        Log.d(TAG, String.format("selPos:%d, childCount:%d", selPos, getChildCount()));
+		if (selPos < 0 || selPos > getChildCount() - 1) {
+			return;
+		}
+		for (int i = 0; i < getChildCount(); ++i) {
+			if (i == selPos) {
+                View center = getChildAt(selPos);
+                View child = getChildAt(selPos+1);
+                if (center == null || child == null) {
+                    return;
+                }
+                if (child.getTag() == null) {
+                    return;
+                }
+                float scale = (float)child.getTag();
+                int distance = center.getLeft() - child.getLeft();
+                // child.startAnimation(createTranslateAniSet(distance));
+                scaleAnimRun(center, scale);
+                Log.d(TAG, String.format("child:%d, selPos:%d, childCount:%d, scale:%f, distance:%d",
+                        i, selPos, getChildCount(), scale, distance));
+				continue;
+			}
+			View center = getChildAt(selPos);
+			View child = getChildAt(i);
+            if (center == null || child == null) {
+                return;
+            }
+            if (child.getTag() == null) {
+                return;
+            }
+            int width = (child.getRight()-child.getLeft());
+			int distance = center.getLeft() - child.getLeft();
+            float scale = (float) child.getTag();
+            // child.startAnimation(createTranslateAniSet(distance));
+            rotateyAnimRun(child, scale, distance);
+            Log.d(TAG, String.format("child:%d, selPos:%d, childCount:%d, scale:%f, distance:%d",
+                    i, selPos, getChildCount(), scale, distance));
+		}
+	}
+
+	private AnimationSet createTranslateAniSet(int distance) {
+		AnimationSet animationSet = new AnimationSet(true);
+
+        TranslateAnimation translateAnimation = new TranslateAnimation(
+				Animation.RELATIVE_TO_SELF, 0f,
+				Animation.RELATIVE_TO_SELF, 1000f,
+				Animation.RELATIVE_TO_SELF, 0f,
+				Animation.RELATIVE_TO_SELF, 1f);
+        translateAnimation.setDuration(5000);
+
+		AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
+		//设置动画执行的时间（单位：毫秒）
+		// alphaAnimation.setDuration(5000);
+
+		animationSet.addAnimation(translateAnimation);
+		// animationSet.addAnimation(alphaAnimation);
+        // animationSet.setDuration(1500);
+        // animationSet.setInterpolator(new AccelerateDecelerateInterpolator());
+
+		return animationSet;
+	}
+
+    public void rotateyAnimRun(final View view, final float width, int distance)
+    {
+        int left = view.getLeft();
+        // ObjectAnimator anim = ObjectAnimator//
+        //         .ofFloat(view, "x", left,  left+distance)
+        //         // .ofFloat(view, "scaleX", width, width)
+        //         // .ofFloat(view, "scaleY", width, width)
+        //         //
+        PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("x", left,
+                left+distance);
+        PropertyValuesHolder pvhZ = PropertyValuesHolder.ofFloat("alpha", 1f,
+                0f);
+        ObjectAnimator anim = ObjectAnimator.ofPropertyValuesHolder(view, pvhX, pvhZ);
+
+        anim.setDuration(500);
+        anim.start();
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
+                // float cVal = (Float) animation.getAnimatedValue();
+                // view.setLeft((int) cVal);
+                view.setScaleX(width);
+                view.setScaleY(width);
+            }
+        });
+    }
+
+    public void scaleAnimRun(final View view, final float scale) {
+        // int left = view.getLeft();
+        // ObjectAnimator anim = ObjectAnimator//
+        //         .ofFloat(view, "scaleX", 1, scale)
+        //         .ofFloat(view, "scaleY", 1, scale)
+        //         // .ofFloat(view, "scaleX", width, width)
+        //         // .ofFloat(view, "scaleY", width, width)
+        //         .setDuration(500);//
+
+        PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("scaleX", 1f,
+                scale);
+        PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("scaleY", 1f,
+                scale);
+        PropertyValuesHolder pvhZ = PropertyValuesHolder.ofFloat("alpha", 1f,
+                0f);
+        ObjectAnimator anim = ObjectAnimator.ofPropertyValuesHolder(view, pvhX, pvhY, pvhZ);
+
+        anim.setDuration(500);
+        anim.start();
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
+                // float cVal = (Float) animation.getAnimatedValue();
+                // view.setLeft((int) cVal);
+                // view.setScaleX(width);
+                // view.setScaleY(width);
+            }
+        });
+    }
+
+    private AnimationSet createScaleAniSet(int scale) {
+		AnimationSet animationSet = new AnimationSet(false);
+
+		ScaleAnimation scaleAnimation = new ScaleAnimation(1, 0.8f, 1, 1,
+				Animation.RELATIVE_TO_SELF, 0.5f,
+				Animation.RELATIVE_TO_SELF, 0.5f);
+
+		AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
+		//设置动画执行的时间（单位：毫秒）
+		alphaAnimation.setDuration(1000);
+
+		animationSet.addAnimation(scaleAnimation);
+		animationSet.addAnimation(alphaAnimation);
+
+		return animationSet;
+	}
+
 	// 	called when drawn child
 	@Override
 	protected boolean getChildStaticTransformation(View child, Transformation t) {
-		FancyCoverFlowItemWrapper item = (FancyCoverFlowItemWrapper) child;
+        if (mCollapsing) {
+            return super.getChildStaticTransformation(child, t);
+        }
+
+        FancyCoverFlowItemWrapper item = (FancyCoverFlowItemWrapper) child;
 
 		preLeftOffset = getChildAt(0).getLeft();
 
@@ -240,10 +495,11 @@ public class FancyCoverFlow extends EcoGallery {
 		final int childWidth = item.getWidth();
 		final int childHeight = item.getHeight();
 		final int childCenter = item.getLeft() + childWidth / 2;
-		Log.d(TAG, String.format("2 %d,%d, %d,%d,%d,%d, %d,%d", item.getWidth(), item.getHeight(),
+		final int num =
+		Log.d(TAG, String.format("2 %d %d,%d, %d,%d,%d,%d, %d,%d", item.hashCode(), item.getWidth(), item.getHeight(),
 				item.getLeft(), item.getRight(), item.getTop(), item.getBottom(), childCenter, coverFlowCenter));
 
-		final int actionDistance = (this.actionDistance == ACTION_DISTANCE_AUTO) ? (int) ((coverFlowWidth + childWidth) / 2.0f)
+		final int actionDistance = (this.actionDistance == ACTION_DISTANCE_AUTO) ? (int) ((coverFlowWidth + childWidth))
 				: this.actionDistance;
 
 		float effectsAmount = Math.min(
@@ -289,6 +545,7 @@ public class FancyCoverFlow extends EcoGallery {
 			imageMatrix.preTranslate(-translateX, -translateY);
 			imageMatrix.postScale(zoomAmount, zoomAmount);
 			imageMatrix.postTranslate(translateX, translateY);
+            child.setTag(zoomAmount);
 
 			if (effectsAmount != 0) {
 
@@ -304,9 +561,9 @@ public class FancyCoverFlow extends EcoGallery {
 								(float) (ViewUtil.Dp2Px(getContext(), 30) * translateFactor),
 								0);
 
-				// Log.d(TAG, String.format("3 %f,%f %f,%f %f,%f", effectsAmount, zoomAmount, translateX, translateY, (float)(ViewUtil.Dp2Px(getContext(), 25) * translateFactor), translateFactor));
+				Log.d(TAG, String.format("3 %f,%f %f,%f %f,%f", effectsAmount, zoomAmount, translateX, translateY, (float)(ViewUtil.Dp2Px(getContext(), 25) * translateFactor), translateFactor));
 			} else {
-				// Log.d(TAG, String.format("3 %f,%f %f,%f %d", effectsAmount, zoomAmount, translateX, translateY, ViewUtil.Dp2Px(getContext(), 0)));
+				Log.d(TAG, String.format("3 %f,%f %f,%f %d", effectsAmount, zoomAmount, translateX, translateY, ViewUtil.Dp2Px(getContext(), 0)));
 			}
 		}
 
@@ -340,12 +597,6 @@ public class FancyCoverFlow extends EcoGallery {
 
 	public boolean isTouchAble() {
 		return isTouchAble;
-	}
-
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	}
 
 	@Override

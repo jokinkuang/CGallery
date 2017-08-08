@@ -3,11 +3,14 @@ package com.cvte;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
@@ -130,7 +133,7 @@ public class TestActivity extends Activity {
 
 
         // item之间的间隙可以近似认为是imageview的宽度与缩放比例的乘积的一半
-        fancyCoverFlow.setSpacing(-70);
+        fancyCoverFlow.setSpacing(-80);
         fancyCoverFlow.setAdapter(adapter);
 
         fancyCoverFlow.setOnMoveListener(new EcoGalleryAdapterView.OnMoveListener() {
@@ -229,9 +232,11 @@ public class TestActivity extends Activity {
             public void onClick(View v) {
                 // fancyCoverFlow.moveToNext(start);
                 // startPlay();
-                stop = false;
-                Message msg = handler.obtainMessage(MSG_UPDATE);
-                handler.sendMessage(msg);
+                // stop = false;
+                // Message msg = handler.obtainMessage(MSG_UPDATE);
+                // handler.sendMessage(msg);
+                Log.d("CGallery", "width:"+fancyCoverFlow.getWidth());
+                fancyCoverFlow.startCollapse();
             }
         });
 
@@ -248,6 +253,7 @@ public class TestActivity extends Activity {
         findViewById(R.id.startFlipBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fancyCoverFlow.mCollapsing = false;
                 fancyCoverFlow.startFling();
             }
         });
@@ -257,9 +263,17 @@ public class TestActivity extends Activity {
         count_drawble = adapter.getCount();
         // startPlay();
         // fancyCoverFlow.startFling();
-        // fancyCoverFlow.setSelection(Integer.MAX_VALUE/2);
+        fancyCoverFlow.setSelection(Integer.MAX_VALUE/2);
 
+        fancyCoverFlow.setBackgroundColor(Color.GRAY);
 
+        // TranslateAnimation translateAnimation = new TranslateAnimation(
+        //         Animation.RELATIVE_TO_SELF, 0f,
+        //         Animation.RELATIVE_TO_SELF, 1f,
+        //         Animation.RELATIVE_TO_SELF, 0f,
+        //         Animation.RELATIVE_TO_SELF, 0f);
+        // translateAnimation.setDuration(15000);
+        // fancyCoverFlow.startAnimation(translateAnimation);
     }
 
     /**

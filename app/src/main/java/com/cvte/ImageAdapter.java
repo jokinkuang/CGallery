@@ -40,8 +40,8 @@ public class ImageAdapter extends FancyCoverFlowAdapter {
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		// return Integer.MAX_VALUE;	// 2147483648 够1w张照片循环了。
-		return filmList.size();
+		return Integer.MAX_VALUE;	// 2147483648 够1w张照片循环了。
+		// return filmList.size();
 	}
 	//
 	// 中心作为0点：Integer.MAX_VALUE／2

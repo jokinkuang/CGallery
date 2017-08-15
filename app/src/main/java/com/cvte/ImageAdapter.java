@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +75,7 @@ public class ImageAdapter extends FancyCoverFlowAdapter {
 
 		ViewHolder viewHolder;
 		if (reusableView == null) {
-			reusableView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_item, parent, false);
+            reusableView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_item, parent, false);
 			reusableView.setLayoutParams(new EcoGallery.LayoutParams(240, 240));
 
 			viewHolder = new ViewHolder();

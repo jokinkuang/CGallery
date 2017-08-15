@@ -1051,7 +1051,9 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	public void startFling() {
         // Fling the gallery!
         mOpFliping = true;
-        mFlingRunnable.startUsingVelocity(10000000);
+        mCollapsing = false;
+
+        mFlingRunnable.startUsingVelocity(1000000000);
         // new Thread(new Runnable() {
         //     @Override
         //     public void run() {

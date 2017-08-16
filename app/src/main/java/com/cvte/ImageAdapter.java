@@ -25,6 +25,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  * 
  */
 public class ImageAdapter extends FancyCoverFlowAdapter {
+	private static final String TAG = "ImageAdapter";
+
 	private Context context;
 	private List<String> filmList;
 	private ImageLoader imageLoader;
@@ -75,6 +77,7 @@ public class ImageAdapter extends FancyCoverFlowAdapter {
 
 		ViewHolder viewHolder;
 		if (reusableView == null) {
+			Log.d(TAG, String.format("[MISS] position %d", position));
             reusableView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_item, parent, false);
 			reusableView.setLayoutParams(new EcoGallery.LayoutParams(240, 240));
 
@@ -83,6 +86,7 @@ public class ImageAdapter extends FancyCoverFlowAdapter {
 			viewHolder.textView = (TextView) reusableView.findViewById(R.id.tv);
 			reusableView.setTag(viewHolder);
 		} else {
+			Log.d(TAG, String.format("[HIT] view %d position %d", reusableView.hashCode(), position));
 			viewHolder = (ViewHolder) reusableView.getTag();
 		}
 

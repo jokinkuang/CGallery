@@ -236,7 +236,7 @@ public class TestActivity extends Activity {
                 // Message msg = handler.obtainMessage(MSG_UPDATE);
                 // handler.sendMessage(msg);
                 Log.d("CGallery", "width:"+fancyCoverFlow.getWidth());
-                fancyCoverFlow.startCollapse();
+                fancyCoverFlow.startFling(-100);
             }
         });
 
@@ -254,7 +254,7 @@ public class TestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 fancyCoverFlow.mCollapsing = false;
-                fancyCoverFlow.startFling();
+                fancyCoverFlow.startFling(-100);
             }
         });
 

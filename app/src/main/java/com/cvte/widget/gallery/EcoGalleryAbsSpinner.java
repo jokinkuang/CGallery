@@ -22,6 +22,7 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
     SpinnerAdapter mAdapter;
 
     public boolean mCollapsing = false;
+
     int mHeightMeasureSpec;
     int mWidthMeasureSpec;
     boolean mBlockLayoutRequests;
@@ -312,7 +313,7 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
         // FIXME -- this is called from both measure and layout.
         // This is harmless right now, but we don't want to do redundant work if
         // this gets more complicated
-       super.handleDataChanged();
+        super.handleDataChanged();
     }
 
 

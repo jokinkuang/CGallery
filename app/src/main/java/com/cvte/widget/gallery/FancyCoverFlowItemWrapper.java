@@ -233,6 +233,11 @@ class FancyCoverFlowItemWrapper extends ViewGroup {
 				(this.getWidth() - childView.getWidth()) / 2, 0, paint);
 	}
 
+	@Override
+	public void dispatchSetSelected(boolean selected) {
+		// Do not handle selected.
+	}
+
 	// =============================================================================
 	// Methods
 	// =============================================================================

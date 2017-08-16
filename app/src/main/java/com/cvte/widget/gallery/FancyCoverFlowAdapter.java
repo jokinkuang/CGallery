@@ -17,16 +17,26 @@
 
 package com.cvte.widget.gallery;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 
 public abstract class FancyCoverFlowAdapter extends BaseAdapter {
+    private static final String TAG = "FancyCoverFlowAdapter";
 
     // =============================================================================
     // Supertype overrides
     // =============================================================================
+
+    private int mRealCount;
+    public void setRealCount(int count) {
+        mRealCount = count;
+    }
+    public int getRealCount() {
+        return mRealCount;
+    }
 
     @Override
     public final View getView(int i, View reusableView, ViewGroup viewGroup) {
@@ -61,7 +71,7 @@ public abstract class FancyCoverFlowAdapter extends BaseAdapter {
 
 
         coverFlowItem.addView(wrappedView);
-        coverFlowItem.setLayoutParams(wrappedView.getLayoutParams());
+        coverFlowItem.setLayoutParams(new EcoGallery.LayoutParams(wrappedView.getLayoutParams()));
 
         return coverFlowItem;
     }

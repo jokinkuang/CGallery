@@ -21,17 +21,10 @@ import android.widget.Scroller;
 import java.lang.reflect.Field;
 
 public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.OnGestureListener {
-
 	private static final String TAG = "CGallery";
-
 	private static final boolean localLOGV = true;
 
-	/**
-	 * Duration in milliseconds from the start of a scroll during which we're
-	 * unsure whether the user is scrolling or flinging.
-	 */
 	private static final int SCROLL_TO_FLING_UNCERTAINTY_TIMEOUT = 250;
-
 	private static final String LOG_TAG = null;
 
     private boolean mOpMoving;
@@ -39,49 +32,15 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
     private int mFlipSpeed;
     private int mFlipResultPosition = -1;
 
-	/**
-	 * Horizontal spacing between items.
-	 */
 	private int mSpacing = 0;
-
-	/**
-	 * How long the transition animation should run when a child view changes
-	 * position, measured in milliseconds.
-	 * 切换效果时间，太短会看不到切换过程的渐变效果
-	 */
 	private int mAnimationDuration = 400;
-
-	/**
-	 * The alpha of items that are not selected.
-	 */
 	private float mUnselectedAlpha;
-
 	private int mGravity;
 
-	/**
-	 * Helper for detecting touch gestures.
-	 */
 	private GestureDetector mGestureDetector;
-
-	/**
-	 * The position of the item that received the user's down touch.
-	 */
 	private int mDownTouchPosition;
-
-	/**
-	 * The view of the item that received the user's down touch.
-	 */
 	private View mDownTouchView;
-
-	/**
-	 * Executes the delta scrolls from a fling or scroll movement.
-	 */
 	private FlingRunnable mFlingRunnable = new FlingRunnable();
-
-	/**
-	 * Sets mSuppressSelectionChanged = false. This is used to set it to false
-	 * in the future. It will also trigger a selection changed.
-	 */
 	private Runnable mDisableSuppressSelectionChangedRunnable = new Runnable() {
 		public void run() {
 			mSuppressSelectionChanged = false;
@@ -89,60 +48,16 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		}
 	};
 
-	/**
-	 * When fling runnable runs, it resets this to false. Any method along the
-	 * path until the end of its run() can set this to true to abort any
-	 * remaining fling. For example, if we've reached either the leftmost or
-	 * rightmost item, we will set this to true.
-	 */
 	private boolean mShouldStopFling;
-
-	/**
-	 * The currently selected item's child.
-	 */
 	private View mSelectedChild;
-
-	/**
-	 * Whether to continuously callback on the item selected listener during a
-	 * fling.
-	 */
 	private boolean mShouldCallbackDuringFling = true;
-
-	/**
-	 * Whether to callback when an item that is not selected is clicked.
-	 */
 	private boolean mShouldCallbackOnUnselectedItemClick = true;
-
-	/**
-	 * If true, do not callback to item selected listener.
-	 */
 	private boolean mSuppressSelectionChanged;
-
-	/**
-	 * If true, we have received the "invoke" (center or enter buttons) key
-	 * down. This is checked before we action on the "invoke" key up, and is
-	 * subsequently cleared.
-	 */
 	private boolean mReceivedInvokeKeyDown;
 
 	private AdapterContextMenuInfo mContextMenuInfo;
-
-	/**
-	 * If true, this onScroll is the first for this user's drag (remember, a
-	 * drag sends many onScrolls).
-	 */
 	private boolean mIsFirstScroll;
-
-	/**
-	 * If true the reflection calls failed and this widget will behave
-	 * unpredictably if used further
-	 */
 	private boolean mBroken;
-
-	/**
-	 * Offset between the center of the selected child view and the center of the Gallery.
-	 * Used to reset position correctly during layout.
-	 */
 	private int mSelectedCenterOffset;
 
 	public EcoGallery(Context context) {
@@ -229,68 +144,19 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		return mBroken;
 	}
 
-	/**
-	 * Whether or not to callback on any {@link #getOnItemSelectedListener()}
-	 * while the items are being flinged. If false, only the final selected item
-	 * will cause the callback. If true, all items between the first and the
-	 * final will cause callbacks.
-	 * 
-	 * @param shouldCallback
-	 *            Whether or not to callback on the listener while the items are
-	 *            being flinged.
-	 */
 	public void setCallbackDuringFling(boolean shouldCallback) {
 		mShouldCallbackDuringFling = shouldCallback;
 	}
-
-	/**
-	 * Whether or not to callback when an item that is not selected is clicked.
-	 * If false, the item will become selected (and re-centered). If true, the
-	 * {@link #getOnItemClickListener()} will get the callback.
-	 * 
-	 * @param shouldCallback
-	 *            Whether or not to callback on the listener when a item that is
-	 *            not selected is clicked.
-	 * @hide
-	 */
 	public void setCallbackOnUnselectedItemClick(boolean shouldCallback) {
 		mShouldCallbackOnUnselectedItemClick = shouldCallback;
 	}
 
-	/**
-	 * Sets how long the transition animation should run when a child view
-	 * changes position. Only relevant if animation is turned on.
-	 * 
-	 * @param animationDurationMillis
-	 *            The duration of the transition, in milliseconds.
-	 * 
-	 * @attr ref android.R.styleable#Gallery_animationDuration
-	 */
 	public void setAnimationDuration(int animationDurationMillis) {
 		mAnimationDuration = animationDurationMillis;
 	}
-
-	/**
-	 * Sets the spacing between items in a Gallery
-	 * item之间的间隙可以近似认为是imageview的宽度与缩放比例的乘积的一半
-	 *
-	 * @param spacing
-	 *            The spacing in pixels between items in the Gallery
-	 * 
-	 * @attr ref android.R.styleable#Gallery_spacing
-	 */
 	public void setSpacing(int spacing) {
 		mSpacing = spacing;
 	}
-
-	/**
-	 * Sets the alpha of items that are not selected in the Gallery.
-	 * 
-	 * @param unselectedAlpha
-	 *            the alpha for the items that are not selected.
-	 * 
-	 * @attr ref android.R.styleable#Gallery_unselectedAlpha
-	 */
 	public void setUnselectedAlpha(float unselectedAlpha) {
 		mUnselectedAlpha = unselectedAlpha;
 	}
@@ -339,9 +205,6 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 
 	@Override
 	protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
-		/*
-		 * Gallery expects EcoGallery.LayoutParams.
-		 */
 		return new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 	}
 
@@ -355,7 +218,6 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		 */
 		mInLayout = true;
 		layout(0, false);
-
 		mInLayout = false;
 	}
 
@@ -369,14 +231,6 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
         return child.getMeasuredWidth();
     }
 
-    /**
-	 * Tracks a motion scroll. In reality, this is used to do just about any
-	 * movement to items (touch scroll, arrow-key scroll, set an item as
-	 * selected).
-	 * 
-	 * @param deltaX
-	 *            Change in X from the previous event.
-	 */
 	void trackMotionScroll(int deltaX) {
 
 		if (getChildCount() == 0) {
@@ -456,41 +310,21 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		return motionToLeft ? Math.max(centerDifference, deltaX) : Math.min(centerDifference, deltaX);
 	}
 
-	/**
-	 * Offset the horizontal location of all children of this view by the
-	 * specified number of pixels.
-	 * 
-	 * @param offset
-	 *            the number of pixels to offset
-	 */
 	private void offsetChildrenLeftAndRight(int offset) {
 		for (int i = getChildCount() - 1; i >= 0; i--) {
 			getChildAt(i).offsetLeftAndRight(offset);
 		}
 	}
 
-	/**
-	 * @return The center of this Gallery.
-	 */
 	private int getCenterOfGallery() {
 		int paddingLeft = getPaddingLeft();
 		return (getWidth() - paddingLeft - getPaddingRight()) / 2 + paddingLeft;
 	}
 
-	/**
-	 * @return The center of the given view.
-	 */
 	private static int getCenterOfView(View view) {
 		return view.getLeft() + view.getWidth() / 2;
 	}
 
-	/**
-	 * Detaches children that are off the screen (i.e.: Gallery bounds).
-	 * 
-	 * @param toLeft
-	 *            Whether to detach children to the left of the Gallery, or to
-	 *            the right.
-	 */
 	private void detachOffScreenChildren(boolean toLeft) {
 		int numChildren = getChildCount();
 		int firstPosition = mFirstPosition;
@@ -536,11 +370,6 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 		}
 	}
 
-	/**
-	 * Scrolls the items so that the selected item is in its 'slot' (its center
-	 * is the gallery's center).
-	 * 滚动到对应的槽
-	 */
 	private void scrollIntoSlots() {
 
 		if (getChildCount() == 0 || mSelectedChild == null)
@@ -598,8 +427,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	}
 
 	/**
-	 * Looks for the child that is closest to the center and sets it as the
-	 * selected child.
+	 * 根据坐标获取选中的View
 	 */
 	private void setSelectionToCenterChild() {
 
@@ -670,10 +498,11 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 
 	/**
 	 * Creates and positions all views for this Gallery.
+	 * 创建并布局
 	 * <p>
 	 * We layout rarely, most of the time {@link #trackMotionScroll(int)} takes
 	 * care of repositioning, adding, and removing children.
-	 * 
+	 * 比较少布局，大部分用于 重新布置，添加，移除子View
 	 * @param delta
 	 *            Change in the selected position. +1 means the selection is
 	 *            moving to the right, so views are scrolling to the left. -1
@@ -1008,6 +837,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	public boolean onTouchEvent(MotionEvent event) {
 
 		// Give everything to the gesture detector
+		// 使用手势检测辅助
 		boolean retValue = mGestureDetector.onTouchEvent(event);
 
 		int action = event.getAction();
@@ -1022,6 +852,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	}
 
 	/**
+	 * 手势的回调
 	 * {@inheritDoc}
 	 */
 	public boolean onSingleTapUp(MotionEvent e) {
@@ -1046,6 +877,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	}
 
 	/**
+	 * 手势的回调
 	 * {@inheritDoc}
 	 */
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -1070,6 +902,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	}
 
 	/**
+	 * 手势的回调
 	 * {@inheritDoc}
 	 */
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -1115,6 +948,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	}
 
 	/**
+	 * 手势的回调
 	 * {@inheritDoc}
 	 */
 	public boolean onDown(MotionEvent e) {
@@ -1160,6 +994,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	}
 
 	/**
+	 * 手势的回调
 	 * {@inheritDoc}
 	 */
 	public void onLongPress(MotionEvent e) {
@@ -1176,12 +1011,15 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	// Unused methods from GestureDetector.OnGestureListener below
 
 	/**
+	 * 手势的回调
 	 * {@inheritDoc}
 	 */
 	public void onShowPress(MotionEvent e) {
 	}
 
 	// Unused methods from GestureDetector.OnGestureListener above
+
+	// 状态分发 : press，unpress，seletect，unselect, focus, unfocus //
 
 	private void dispatchPress(View child) {
 
@@ -1266,6 +1104,8 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 
 		return handled;
 	}
+
+	// 按键捕获
 
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {

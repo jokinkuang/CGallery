@@ -361,8 +361,8 @@ public class FancyCoverFlow extends EcoGallery {
 		final int childHeight = item.getHeight();
 		final int childCenter = item.getLeft() + childWidth / 2;
         if (VERB) {
-            Log.d(TAG, String.format("2 %d %d,%d, %d,%d,%d,%d, %d,%d", item.hashCode(), item.getWidth(), item.getHeight(),
-                    item.getLeft(), item.getRight(), item.getTop(), item.getBottom(), childCenter, coverFlowCenter));
+            // Log.d(TAG, String.format("2 %d %d,%d, %d,%d,%d,%d, %d,%d", item.hashCode(), item.getWidth(), item.getHeight(),
+            //         item.getLeft(), item.getRight(), item.getTop(), item.getBottom(), childCenter, coverFlowCenter));
         }
 
         // 受影响距离

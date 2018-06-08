@@ -90,12 +90,12 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
             mAdapter.unregisterDataSetObserver(mDataSetObserver);
             resetList();
         }
-       
+
         mAdapter = adapter;
-       
+
         mOldSelectedPosition = INVALID_POSITION;
         mOldSelectedRowId = INVALID_ROW_ID;
-       
+
         if (mAdapter != null) {
             mOldItemCount = mItemCount;
             mItemCount = mAdapter.getCount();
@@ -108,14 +108,14 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
 
             setSelectedPositionInt(position);
             setNextSelectedPositionInt(position);
-           
+
             if (mItemCount == 0) {
                 // Nothing selected
                 checkSelectionChanged();
             }
-           
+
         } else {
-            checkFocus();            
+            checkFocus();
             resetList();
             // Nothing selected
             checkSelectionChanged();
@@ -130,11 +130,11 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
     void resetList() {
         mDataChanged = false;
         mNeedSync = false;
-       
+
         removeAllViewsInLayout();
         mOldSelectedPosition = INVALID_POSITION;
         mOldSelectedRowId = INVALID_ROW_ID;
-       
+
         setSelectedPositionInt(INVALID_POSITION);
         setNextSelectedPositionInt(INVALID_POSITION);
         invalidate();
@@ -203,81 +203,81 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        // int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
-        // int widthSize;
-        // int heightSize;
-        //
-        // int paddingLeft = getPaddingLeft();
-        // int paddingRight = getPaddingRight();
-        // int paddingTop = getPaddingTop();
-        // int paddingBottom = getPaddingBottom();
-        //
-        // mSpinnerPadding.left = paddingLeft > mSelectionLeftPadding ? paddingLeft
-        //         : mSelectionLeftPadding;
-        // mSpinnerPadding.top = paddingTop > mSelectionTopPadding ? paddingTop
-        //         : mSelectionTopPadding;
-        // mSpinnerPadding.right = paddingRight > mSelectionRightPadding ? paddingRight
-        //         : mSelectionRightPadding;
-        // mSpinnerPadding.bottom = paddingBottom > mSelectionBottomPadding ? paddingBottom
-        //         : mSelectionBottomPadding;
-        //
-        // if (mDataChanged) {
-        //     handleDataChanged();
-        // }
-        //
-        // int preferredHeight = 0;
-        // int preferredWidth = 0;
-        // boolean needsMeasuring = true;
-        //
-        // int selectedPosition = getSelectedItemPosition();
-        // if (selectedPosition >= 0 && mAdapter != null) {
-        //     // Try looking in the recycler. (Maybe we were measured once already)
-        //     View view = mRecycler.get();
-        //     if (view == null) {
-        //         // Make a new one
-        //         view = mAdapter.getView(selectedPosition, null, this);
-        //     }
-        //
-        //     if (view != null) {
-        //         // Put in recycler for re-measuring and/or layout
-        //         mRecycler.add(selectedPosition, view);
-        //     }
-        //
-        //     if (view != null) {
-        //         if (view.getLayoutParams() == null) {
-        //             mBlockLayoutRequests = true;
-        //             view.setLayoutParams(generateDefaultLayoutParams());
-        //             mBlockLayoutRequests = false;
-        //         }
-        //         measureChild(view, widthMeasureSpec, heightMeasureSpec);
-        //
-        //         preferredHeight = getChildHeight(view) + mSpinnerPadding.top + mSpinnerPadding.bottom;
-        //         preferredWidth = getChildWidth(view) + mSpinnerPadding.left + mSpinnerPadding.right;
-        //
-        //         needsMeasuring = false;
-        //     }
-        // }
-        //
-        // if (needsMeasuring) {
-        //     // No views -- just use padding
-        //     preferredHeight = mSpinnerPadding.top + mSpinnerPadding.bottom;
-        //     if (widthMode == View.MeasureSpec.UNSPECIFIED) {
-        //         preferredWidth = mSpinnerPadding.left + mSpinnerPadding.right;
-        //     }
-        // }
-        //
-        // preferredHeight = Math.max(preferredHeight, getSuggestedMinimumHeight());
-        // preferredWidth = Math.max(preferredWidth, getSuggestedMinimumWidth());
-        //
-        // heightSize = resolveSize(preferredHeight, heightMeasureSpec);
-        // widthSize = resolveSize(preferredWidth, widthMeasureSpec);
-        //
-        // setMeasuredDimension(widthSize, heightSize);
-        // mHeightMeasureSpec = heightMeasureSpec;
-        // mWidthMeasureSpec = widthMeasureSpec;
-        // if (VERB) {
-        //     Log.d(TAG, String.format("width:%d, height:%d", widthSize, heightSize));
-        // }
+        int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize;
+        int heightSize;
+
+        int paddingLeft = getPaddingLeft();
+        int paddingRight = getPaddingRight();
+        int paddingTop = getPaddingTop();
+        int paddingBottom = getPaddingBottom();
+
+        mSpinnerPadding.left = paddingLeft > mSelectionLeftPadding ? paddingLeft
+                : mSelectionLeftPadding;
+        mSpinnerPadding.top = paddingTop > mSelectionTopPadding ? paddingTop
+                : mSelectionTopPadding;
+        mSpinnerPadding.right = paddingRight > mSelectionRightPadding ? paddingRight
+                : mSelectionRightPadding;
+        mSpinnerPadding.bottom = paddingBottom > mSelectionBottomPadding ? paddingBottom
+                : mSelectionBottomPadding;
+
+        if (mDataChanged) {
+            handleDataChanged();
+        }
+
+        int preferredHeight = 0;
+        int preferredWidth = 0;
+        boolean needsMeasuring = true;
+
+        int selectedPosition = getSelectedItemPosition();
+        if (selectedPosition >= 0 && mAdapter != null) {
+            // Try looking in the recycler. (Maybe we were measured once already)
+            View view = mRecycler.get();
+            if (view == null) {
+                // Make a new one
+                view = mAdapter.getView(selectedPosition, null, this);
+            }
+
+            if (view != null) {
+                // Put in recycler for re-measuring and/or layout
+                mRecycler.add(selectedPosition, view);
+            }
+
+            if (view != null) {
+                if (view.getLayoutParams() == null) {
+                    mBlockLayoutRequests = true;
+                    view.setLayoutParams(generateDefaultLayoutParams());
+                    mBlockLayoutRequests = false;
+                }
+                measureChild(view, widthMeasureSpec, heightMeasureSpec);
+
+                preferredHeight = getChildHeight(view) + mSpinnerPadding.top + mSpinnerPadding.bottom;
+                preferredWidth = getChildWidth(view) + mSpinnerPadding.left + mSpinnerPadding.right;
+
+                needsMeasuring = false;
+            }
+        }
+
+        if (needsMeasuring) {
+            // No views -- just use padding
+            preferredHeight = mSpinnerPadding.top + mSpinnerPadding.bottom;
+            if (widthMode == View.MeasureSpec.UNSPECIFIED) {
+                preferredWidth = mSpinnerPadding.left + mSpinnerPadding.right;
+            }
+        }
+
+        preferredHeight = Math.max(preferredHeight, getSuggestedMinimumHeight());
+        preferredWidth = Math.max(preferredWidth, getSuggestedMinimumWidth());
+
+        heightSize = resolveSize(preferredHeight, heightMeasureSpec);
+        widthSize = resolveSize(preferredWidth, widthMeasureSpec);
+
+        setMeasuredDimension(widthSize, heightSize);
+        mHeightMeasureSpec = heightMeasureSpec;
+        mWidthMeasureSpec = widthMeasureSpec;
+        if (VERB) {
+            Log.d(TAG, String.format("width:%d, height:%d", widthSize, heightSize));
+        }
     }
 
 
@@ -484,7 +484,7 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
         SavedState(Parcelable superState) {
             super(superState);
         }
-       
+
         /**
          * Constructor called from {@link #CREATOR}
          */
@@ -537,7 +537,7 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
     @Override
     public void onRestoreInstanceState(Parcelable state) {
         SavedState ss = (SavedState) state;
- 
+
         super.onRestoreInstanceState(ss.getSuperState());
 
         if (ss.selectedId >= 0) {
@@ -556,22 +556,22 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
         public void put(int position, View v) {
             mScrapHeap.put(position, v);
         }
- 
+
         public void add(int position, View v) {
             mScrapHeap.put(mScrapHeap.size(), v);
         }
         public View get() {
             if (mScrapHeap.size() < 1) return null;
-           
+
             View result = mScrapHeap.valueAt(0);
             int key = mScrapHeap.keyAt(0);
-           
+
             if (result != null) {
                     mScrapHeap.delete(key);
             }
             return result;
         }
-       
+
         View get(int position) {
             // System.out.print("Looking for " + position);
             View result = mScrapHeap.get(position);
@@ -583,15 +583,15 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
             }
             return result;
         }
-       
+
         View peek(int position) {
             // System.out.print("Looking for " + position);
             return mScrapHeap.get(position);
         }
-       
+
         void clear() {
             final SparseArray<View> scrapHeap = mScrapHeap;
-           
+
             final int count = scrapHeap.size();
             for (int i = 0; i < count; i++) {
                 final View view = scrapHeap.valueAt(i);
@@ -599,7 +599,7 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
                     removeDetachedView(view, true);
                 }
             }
-                       
+
             scrapHeap.clear();
         }
     }

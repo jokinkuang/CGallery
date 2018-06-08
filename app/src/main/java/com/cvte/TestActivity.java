@@ -4,15 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.cvte.widget.gallery.EcoGalleryAdapterView;
 import com.cvte.widget.gallery.FancyCoverFlow;
@@ -23,7 +20,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -51,10 +47,13 @@ public class TestActivity extends Activity {
                 .denyCacheImageMultipleSizesInMemory()
                 .discCacheFileNameGenerator(new Md5FileNameGenerator())
                 .tasksProcessingOrder(QueueProcessingType.LIFO)
-                // .writeDebugLogs() // Remove for release app
+                .writeDebugLogs() // Remove for release app
                 .build();
         // Initialize ImageLoader with configuration.
         ImageLoader.getInstance().init(config);
+        ImageLoader.getInstance().clearDiscCache();
+        ImageLoader.getInstance().clearMemoryCache();
+
 
         // 配置option
         options = new DisplayImageOptions.Builder()

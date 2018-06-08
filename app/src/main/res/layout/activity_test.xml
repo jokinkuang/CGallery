@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp">
-        <com.cvte.widget.gallery.FancyCoverFlow
+        <com.jokin.widget.gallery.FancyCoverFlow
             android:id="@+id/fancyCoverFlow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

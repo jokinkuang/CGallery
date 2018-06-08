@@ -1,4 +1,4 @@
-package com.cvte.widget.gallery;
+package com.jokin.widget.gallery;
 
 import android.content.Context;
 

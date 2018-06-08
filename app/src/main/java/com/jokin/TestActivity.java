@@ -1,4 +1,4 @@
-package com.cvte;
+package com.jokin;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,9 +11,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.cvte.widget.gallery.EcoGalleryAdapterView;
-import com.cvte.widget.gallery.FancyCoverFlow;
-import com.cvte.widget.gallery.R;
+import com.jokin.widget.gallery.EcoGalleryAdapterView;
+import com.jokin.widget.gallery.FancyCoverFlow;
+import com.jokin.widget.gallery.R;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;

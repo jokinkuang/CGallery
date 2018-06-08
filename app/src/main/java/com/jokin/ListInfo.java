@@ -1,4 +1,4 @@
-package com.cvte;
+package com.jokin;
 
 import java.util.ArrayList;
 import java.util.List;

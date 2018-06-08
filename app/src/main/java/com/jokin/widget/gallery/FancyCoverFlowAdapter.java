@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-package com.cvte.widget.gallery;
+package com.jokin.widget.gallery;
 
 import android.view.View;
 import android.view.ViewGroup;

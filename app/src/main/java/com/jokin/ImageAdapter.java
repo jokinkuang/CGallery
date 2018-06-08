@@ -1,10 +1,9 @@
-package com.cvte;
+package com.jokin;
 
 import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,15 +16,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.cvte.widget.gallery.EcoGallery;
-import com.cvte.widget.gallery.FancyCoverFlowAdapter;
-import com.cvte.widget.gallery.R;
+import com.jokin.widget.gallery.EcoGallery;
+import com.jokin.widget.gallery.FancyCoverFlowAdapter;
+import com.jokin.widget.gallery.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;

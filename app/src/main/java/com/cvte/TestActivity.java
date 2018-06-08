@@ -252,7 +252,6 @@ public class TestActivity extends Activity {
         findViewById(R.id.startFlipBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fancyCoverFlow.mCollapsing = false;
                 fancyCoverFlow.startFling(-100);
             }
         });

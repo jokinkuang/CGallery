@@ -18,8 +18,8 @@ import android.view.animation.Transformation;
 import android.widget.SpinnerAdapter;
 
 public class FancyCoverFlow extends EcoGallery {
-	private static final String TAG = "FancyCoverFlow";
-    private static boolean VERB = true;
+	private static final String TAG = "CoverFlowGallery";
+    private static boolean VERB = false;
 
 	public static final int ACTION_DISTANCE_AUTO = Integer.MAX_VALUE;
     private static final int CollapseAnimationDuration = 1000;
@@ -69,21 +69,21 @@ public class FancyCoverFlow extends EcoGallery {
 
 	private void applyXmlAttributes(AttributeSet attrs) {
 		TypedArray a = getContext().obtainStyledAttributes(attrs,
-				R.styleable.FancyCoverFlow);
+				R.styleable.CoverFlowGallery);
 
         this.actionDistance = a
-                .getInteger(R.styleable.FancyCoverFlow_actionDistance,
+                .getInteger(R.styleable.CoverFlowGallery_actionDistance,
                         ACTION_DISTANCE_AUTO);
         this.scaleDownGravity = a.getFloat(
-                R.styleable.FancyCoverFlow_scaleDownGravity, 0.5f);
-        this.maxRotation = a.getInteger(R.styleable.FancyCoverFlow_maxRotation,
+                R.styleable.CoverFlowGallery_scaleDownGravity, 0.5f);
+        this.maxRotation = a.getInteger(R.styleable.CoverFlowGallery_maxRotation,
                 0);
         this.unselectedAlpha = a.getFloat(
-                R.styleable.FancyCoverFlow_unselectedAlpha1, 0.5f);
+                R.styleable.CoverFlowGallery_unselectedAlpha1, 0.8f);
         this.unselectedSaturation = a.getFloat(
-                R.styleable.FancyCoverFlow_unselectedSaturation, 0.0f);
+                R.styleable.CoverFlowGallery_unselectedSaturation, 0.0f);
         this.unselectedScale = a.getFloat(
-                R.styleable.FancyCoverFlow_unselectedScale, 0.75f);
+                R.styleable.CoverFlowGallery_unselectedScale, 0.75f);
     }
 
 	public float getReflectionRatio() {
@@ -239,7 +239,8 @@ public class FancyCoverFlow extends EcoGallery {
 	public int count = 0;
 
 	public void startCollapseAnimation() {
-		mCollapsing = true;
+//		mCollapsing = true;
+		setCollapsing(true);
 
 		int selPos = mSelectedPosition - mFirstPosition;
         if (VERB) {
@@ -339,7 +340,8 @@ public class FancyCoverFlow extends EcoGallery {
 	// 	called when drawing
 	@Override
 	protected boolean getChildStaticTransformation(View child, Transformation t) {
-		if (mCollapsing) {
+//		if (mCollapsing) {
+		if (isCollapsing()) {
 			return super.getChildStaticTransformation(child, t);
 		}
 
@@ -361,8 +363,8 @@ public class FancyCoverFlow extends EcoGallery {
 		final int childHeight = item.getHeight();
 		final int childCenter = item.getLeft() + childWidth / 2;
         if (VERB) {
-            // Log.d(TAG, String.format("2 %d %d,%d, %d,%d,%d,%d, %d,%d", item.hashCode(), item.getWidth(), item.getHeight(),
-            //         item.getLeft(), item.getRight(), item.getTop(), item.getBottom(), childCenter, coverFlowCenter));
+            Log.d(TAG, String.format("2 %d %d,%d, %d,%d,%d,%d, %d,%d", item.hashCode(), item.getWidth(), item.getHeight(),
+                    item.getLeft(), item.getRight(), item.getTop(), item.getBottom(), childCenter, coverFlowCenter));
         }
 
         // 受影响距离
@@ -378,28 +380,29 @@ public class FancyCoverFlow extends EcoGallery {
 		t.setTransformationType(Transformation.TYPE_BOTH);
 
 		if (this.unselectedAlpha != 1) {
-			final float alphaAmount = (this.unselectedAlpha - 1)
-					* Math.abs(effectsAmount) + 1;
+			final float alphaAmount = 1 - (1 - this.unselectedAlpha)
+					* Math.abs(effectsAmount);
+			Log.d(TAG, String.format("alphaAmount:%f unselAlpha:%f", alphaAmount, unselectedAlpha));
 			t.setAlpha(alphaAmount);
 		}
 
-		if (this.unselectedSaturation != 1) {
-			// Pass over saturation to the wrapper.
-			final float saturationAmount = (this.unselectedSaturation - 1)
-					* Math.abs(effectsAmount) + 1;
-			item.setSaturation(saturationAmount);
-		}
+		// if (this.unselectedSaturation != 1) {
+		// 	// Pass over saturation to the wrapper.
+		// 	final float saturationAmount = (this.unselectedSaturation - 1)
+		// 			* Math.abs(effectsAmount) + 1;
+		// 	item.setSaturation(saturationAmount);
+		// }
 
 		final Matrix imageMatrix = t.getMatrix();
 
 		// 旋转角度不为0则开始图片旋转.
-		if (this.maxRotation != 0) {
-			final int rotationAngle = (int) (-effectsAmount * this.maxRotation);
-			this.transformationCamera.save();
-			this.transformationCamera.rotateY(rotationAngle);
-			this.transformationCamera.getMatrix(imageMatrix);
-			this.transformationCamera.restore();
-		}
+		// if (this.maxRotation != 0) {
+		// 	final int rotationAngle = (int) (-effectsAmount * this.maxRotation);
+		// 	this.transformationCamera.save();
+		// 	this.transformationCamera.rotateY(rotationAngle);
+		// 	this.transformationCamera.getMatrix(imageMatrix);
+		// 	this.transformationCamera.restore();
+		// }
 
 		// 缩放.
 		if (this.unselectedScale != 0) {
@@ -445,15 +448,5 @@ public class FancyCoverFlow extends EcoGallery {
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
                            float velocityY) {
         return super.onFling(e1, e2, velocityX / 1.5f, velocityY);
-	}
-
-	public int Dp2Px(Context context, float dp) {
-		final float scale = context.getResources().getDisplayMetrics().density;
-		return (int) (dp * scale + 0.5f);
-	}
-
-	public int Px2Dp(Context context, float px) {
-		final float scale = context.getResources().getDisplayMetrics().density;
-		return (int) (px / scale + 0.5f);
 	}
 }

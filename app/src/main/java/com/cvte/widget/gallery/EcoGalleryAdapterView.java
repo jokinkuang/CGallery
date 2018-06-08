@@ -1,5 +1,6 @@
 package com.cvte.widget.gallery;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Parcelable;
@@ -94,6 +95,7 @@ public abstract class EcoGalleryAdapterView<T extends Adapter> extends ViewGroup
 	boolean mInLayout = false;
 
 	OnMoveListener mOnMoveListener;
+	OnFlipAnimationListener mOnFlipAnimationListener;
 
 	/**
 	 * The listener that receives notifications when an item is selected.
@@ -216,6 +218,22 @@ public abstract class EcoGalleryAdapterView<T extends Adapter> extends ViewGroup
 	public boolean performMoveFinish(View view, int position, long id) {
 		if (mOnMoveListener != null) {
 			mOnMoveListener.onMoveFinish(this, view, position, id);
+			return true;
+		}
+		return false;
+	}
+
+	public interface OnFlipAnimationListener {
+		void onFlipAnimationEnd(EcoGalleryAdapterView<?> parent, View view, int position, long id);
+	}
+
+	public void setOnFlipAnimationListener(OnFlipAnimationListener listener) {
+		mOnFlipAnimationListener = listener;
+	}
+
+	public boolean performFlipAnimationListener(View view, int position, long id) {
+		if (mOnFlipAnimationListener != null) {
+			mOnFlipAnimationListener.onFlipAnimationEnd(this, view, position, id);
 			return true;
 		}
 		return false;
@@ -742,6 +760,7 @@ public abstract class EcoGalleryAdapterView<T extends Adapter> extends ViewGroup
 	 * sure that the listview is VISIBLE and that the empty view is GONE (if
 	 * it's not null).
 	 */
+	@SuppressLint("WrongCall")
 	private void updateEmptyStatus(boolean empty) {
 		if (isInFilterMode()) {
 			empty = false;

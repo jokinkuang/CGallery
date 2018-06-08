@@ -18,7 +18,6 @@
 package com.cvte.widget.gallery;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -44,19 +43,20 @@ import android.view.ViewGroup;
  * This is a ViewGroup by intention to enable child views in layouts to stay
  * interactive (like buttons) though transformed.
  * <p/>
- * Since this class is only used within the FancyCoverFlowAdapter it doesn't
+ * Since this class is only used within the CoverFlowGalleryAdapter it doesn't
  * need to check if there are multiple children or not (there can only be one at
  * all times).
  */
 @SuppressWarnings("ConstantConditions")
 class FancyCoverFlowItemWrapper extends ViewGroup {
+	private static final String TAG = "CoverFlowGalleryItemWrapp";
 
 	// =============================================================================
 	// Private members
 	// =============================================================================
 	private FancyCoverFlow gallery;
 
-	private float saturation;
+	private float saturation = 1.0f; // 色饱和度
 
 	private boolean isReflectionEnabled = false;
 
@@ -102,12 +102,12 @@ class FancyCoverFlowItemWrapper extends ViewGroup {
 	}
 
 	public FancyCoverFlowItemWrapper(Context context, AttributeSet attrs,
-                                     int defStyle) {
+									 int defStyle) {
 		super(context, attrs, defStyle);
 		this.init();
 	}
 
-	public void setFancyCoverFlow(FancyCoverFlow gallery) {
+	public void setCoverFlowGallery(FancyCoverFlow gallery) {
 		this.gallery = gallery;
 	}
 
@@ -115,8 +115,6 @@ class FancyCoverFlowItemWrapper extends ViewGroup {
 		this.paint = new Paint();
 		this.colorMatrix = new ColorMatrix();
 		// TODO: Define a default value for saturation inside an XML.
-		this.setSaturation(1);
-		// this.setBackgroundColor(Color.BLUE);
 	}
 
 	// =============================================================================
@@ -191,14 +189,15 @@ class FancyCoverFlowItemWrapper extends ViewGroup {
 			int measuredWidth = this.getMeasuredWidth();
 			int measuredHeight = this.getMeasuredHeight();
 
-			if (this.wrappedViewBitmap == null
-					|| this.wrappedViewBitmap.getWidth() != measuredWidth
-					|| this.wrappedViewBitmap.getHeight() != measuredHeight) {
-				this.wrappedViewBitmap = Bitmap.createBitmap(measuredWidth,
-						measuredHeight, Bitmap.Config.ARGB_8888);
-				this.wrappedViewDrawingCanvas = new Canvas(
-						this.wrappedViewBitmap);
-			}
+			// if (this.wrappedViewBitmap == null
+			// 		|| this.wrappedViewBitmap.getWidth() != measuredWidth
+			// 		|| this.wrappedViewBitmap.getHeight() != measuredHeight) {
+			// 	this.wrappedViewBitmap = Bitmap.createBitmap(measuredWidth,
+			// 			measuredHeight, Bitmap.Config.ARGB_8888);
+			// 	this.wrappedViewDrawingCanvas = new Canvas(
+			// 			this.wrappedViewBitmap);
+			// }
+			// Log.d(TAG, String.format("child count: %d", getChildCount()));
 
 			View child = getChildAt(0);
 			int childWidth = child.getMeasuredWidth();
@@ -209,29 +208,29 @@ class FancyCoverFlowItemWrapper extends ViewGroup {
 		}
 	}
 
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	@Override
-	protected void dispatchDraw(Canvas canvas) {
-		View childView = getChildAt(0);
-
-		if (childView != null) {
-			// If on honeycomb or newer, cache the view.
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				if (childView.isDirty()) {
-					childView.draw(this.wrappedViewDrawingCanvas);
-
-					if (this.isReflectionEnabled) {
-						this.createReflectedImages();
-					}
-				}
-			} else {
-				childView.draw(this.wrappedViewDrawingCanvas);
-			}
-		}
-
-		canvas.drawBitmap(this.wrappedViewBitmap,
-				(this.getWidth() - childView.getWidth()) / 2, 0, paint);
-	}
+	// @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	// @Override
+	// protected void dispatchDraw(Canvas canvas) {
+	// 	View childView = getChildAt(0);
+    //
+	// 	if (childView != null) {
+	// 		// If on honeycomb or newer, cache the view.
+	// 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+	// 			if (childView.isDirty()) {
+	// 				childView.draw(this.wrappedViewDrawingCanvas);
+    //
+	// 				if (this.isReflectionEnabled) {
+	// 					this.createReflectedImages();
+	// 				}
+	// 			}
+	// 		} else {
+	// 			childView.draw(this.wrappedViewDrawingCanvas);
+	// 		}
+	// 	}
+    //
+	// 	canvas.drawBitmap(this.wrappedViewBitmap,
+	// 			(this.getWidth() - childView.getWidth()) / 2, 0, paint);
+	// }
 
 	@Override
 	public void dispatchSetSelected(boolean selected) {

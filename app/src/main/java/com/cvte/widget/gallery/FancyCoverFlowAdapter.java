@@ -17,14 +17,12 @@
 
 package com.cvte.widget.gallery;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 
 public abstract class FancyCoverFlowAdapter extends BaseAdapter {
-    private static final String TAG = "FancyCoverFlowAdapter";
 
     // =============================================================================
     // Supertype overrides
@@ -51,7 +49,7 @@ public abstract class FancyCoverFlowAdapter extends BaseAdapter {
             coverFlowItem.removeAllViews();
         } else {
             coverFlowItem = new FancyCoverFlowItemWrapper(viewGroup.getContext());
-            coverFlowItem.setFancyCoverFlow(coverFlow);
+            coverFlowItem.setCoverFlowGallery(coverFlow);
         }
 
         wrappedView = this.getCoverFlowItem(i, wrappedView, viewGroup);

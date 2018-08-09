@@ -15,11 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import com.jokin.widget.gallery.CGallery;
 import com.jokin.widget.gallery.FancyGalleryAdapter;
+import com.jokin.widget.gallery.ListLooper;
 import com.jokin.widget.gallery.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -35,49 +35,60 @@ import java.util.List;
 public class ImageAdapter extends FancyGalleryAdapter {
 	private static final String TAG = "ImageAdapter";
 
-	private Context context;
-	private List<String> filmList;
-	private ImageLoader imageLoader;
-	private DisplayImageOptions options;
+	private Context mContext;
+	private List<String> mFilmList;
+	private ImageLoader mImageLoader;
+	private DisplayImageOptions mOptions;
+	private boolean mEnableText;
+
+	private ListLooper mListLooper = new ListLooper(ListLooper.StyleLoop);
 
 	public ImageAdapter(Context context, List<String> filmList,
 			DisplayImageOptions options, ImageLoader imageLoader) {
-		this.context = context;
-		this.filmList = filmList;
-		this.options = options;
-		this.imageLoader = imageLoader;
+		this.mContext = context;
+		this.mOptions = options;
+		this.mImageLoader = imageLoader;
+
+		this.mFilmList = filmList;
+		mListLooper.setData(filmList);
+	}
+
+	public void setStyle(int style) {
+		mListLooper.setStyle(style);
 	}
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
-		return Integer.MAX_VALUE;	// 2147483648 够1w张照片循环了。
-		// return filmList.size();
+		return mListLooper.getCount();
 	}
-	//
-	// 中心作为0点：Integer.MAX_VALUE／2
-	//
+
+	public int getRealCount() {
+		return mListLooper.getCount();
+	}
 
 	@Override
 	public Object getItem(int position) {
-		// TODO Auto-generated method stub
-		return filmList.get(position % filmList.size());
+		return mListLooper.getItem(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
-		return position % filmList.size();
+		return mListLooper.getItemId(position);
 	}
 
 	public List<String> getData() {
-        return filmList;
+        return mFilmList;
     }
+
+	public void setTextEnable(boolean bl) {
+		mEnableText = bl;
+	}
 
     private static class ViewHolder {
 		private ImageView imageView;
 		private TextView textView;
 	}
+
 
 	@Override
 	public View getCoverFlowItem(int position, View reusableView,
@@ -87,7 +98,8 @@ public class ImageAdapter extends FancyGalleryAdapter {
 		if (reusableView == null) {
 			Log.d(TAG, String.format("[MISS] position %d", position));
             reusableView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_item, parent, false);
-			reusableView.setLayoutParams(new CGallery.LayoutParams(240, 480));
+            // CGallery.LayoutParams can not be WRAP_CONTENT 因为内部靠自适应来决定加载多少个Item。WRAP_CONTENT会导致没有边界。
+			reusableView.setLayoutParams(new CGallery.LayoutParams(360, 480));
 
 			viewHolder = new ViewHolder();
 			viewHolder.imageView = (ImageView) reusableView.findViewById(R.id.imgv);
@@ -101,7 +113,7 @@ public class ImageAdapter extends FancyGalleryAdapter {
 		// ps.电影海报宽高比例一般为3：4
 		// 异步加载图片
 		final ImageView imageView = viewHolder.imageView;
-		imageLoader.displayImage(filmList.get(position % filmList.size()), imageView, options, new ImageLoadingListener() {
+		mImageLoader.displayImage(mFilmList.get(position % mFilmList.size()), imageView, mOptions, new ImageLoadingListener() {
 			@Override
 			public void onLoadingStarted(String s, View view) {
 
@@ -114,9 +126,13 @@ public class ImageAdapter extends FancyGalleryAdapter {
 
 			@Override
 			public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-				Bitmap blurBitmap = Bitmap.createBitmap(bitmap);
-				// imageView.setImageBitmap(blurBitmap(bitmap, blurBitmap, 0.0001f, context));
-				blur(bitmap, imageView);
+				imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+				imageView.setImageBitmap(bitmap);
+
+				// 模糊
+				// Bitmap blurBitmap = Bitmap.createBitmap(bitmap);
+				// imageView.setImageBitmap(blurBitmap(bitmap, blurBitmap, 0.0001f, mContext));
+				// blur(bitmap, imageView);
 			}
 
 			@Override
@@ -124,26 +140,27 @@ public class ImageAdapter extends FancyGalleryAdapter {
 
 			}
 		});
-		imageView.setScaleType(ScaleType.CENTER_CROP);
 
-		TextView textView = viewHolder.textView;
-		textView.setBackgroundColor(Color.BLUE);
-		textView.setTextColor(Color.YELLOW);
-		textView.setTextSize(18);
-		textView.setText(String.valueOf(position));
+		if (mEnableText) {
+			TextView textView = viewHolder.textView;
+			textView.setBackgroundColor(Color.BLUE);
+			textView.setTextColor(Color.YELLOW);
+			textView.setTextSize(9);
+			textView.setText(String.valueOf(position));
+		}
 
 		return reusableView;
 
-
-        // ImageView imageView = new ImageView(context);
-        // imageView.setImageResource(pics[index % pics.length]);
-        //
-        // imageView.setLayoutParams(new Gallery.LayoutParams(W, H));
-        // imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        // return imageView;
+		// ImageView imageView = new ImageView(mContext);
+		// imageView.setImageResource(pics[index % pics.length]);
+		//
+		// imageView.setLayoutParams(new Gallery.LayoutParams(W, H));
+		// imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+		// return imageView;
 	}
 
 
+	////////////////// 图片处理 //////////////////////
 
 	/**
 	 * 通过调用系统高斯模糊api的方法模糊
@@ -151,7 +168,7 @@ public class ImageAdapter extends FancyGalleryAdapter {
 	 * @param bitmap    source bitmap
 	 * @param outBitmap out bitmap
 	 * @param radius    0 < radius <= 25
-	 * @param context   context
+	 * @param context   mContext
 	 * @return out bitmap
 	 */
 	public static Bitmap blurBitmap(Bitmap bitmap, Bitmap outBitmap, float radius, Context context) {
@@ -209,7 +226,7 @@ public class ImageAdapter extends FancyGalleryAdapter {
 		// ----接下来做模糊 outputBitmap 处理操作----
 
 		// 创建 RenderScript
-		RenderScript rs = RenderScript.create(context);
+		RenderScript rs = RenderScript.create(mContext);
 		Allocation input = Allocation.createFromBitmap(rs, outputBitmap);
 		Allocation output = Allocation.createTyped(rs, input.getType());
 		// 使用 ScriptIntrinsicBlur 类来模糊图片
@@ -223,7 +240,7 @@ public class ImageAdapter extends FancyGalleryAdapter {
 		// 模糊 outputBitmap
 		output.copyTo(outputBitmap);
 		// 将模糊后的 outputBitmap 设为目标 View 的背景
-		targetView.setBackground(new BitmapDrawable(context.getResources(), outputBitmap));
+		targetView.setBackground(new BitmapDrawable(mContext.getResources(), outputBitmap));
 		rs.destroy();
 	}
 

@@ -21,6 +21,7 @@ public class ListInfo {
 
 	};
 
+
 	public static String[] names = new String[] { "银河护卫队", "3D食人虫", "心花路放",
 			"忍者神龟", "移动迷宫", "魁拔3", "史来贺"
 

@@ -9,7 +9,7 @@
 
     <FrameLayout
         android:layout_gravity="top|center"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp">
         <com.jokin.widget.gallery.FancyGallery
@@ -42,10 +42,25 @@
             android:text="停止抽奖"/>
 
         <Button
-            android:id="@+id/startFlipBtn"
+            android:id="@+id/loopModeBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="开始滑动"/>
+            android:text="循环模式"/>
+        <Button
+            android:id="@+id/normalModeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="普通模式"/>
+        <Button
+            android:id="@+id/textBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="显示/隐藏下标"/>
+        <Button
+            android:id="@+id/disableTouchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="禁止/开启触摸"/>
     </LinearLayout>
 
 </FrameLayout>

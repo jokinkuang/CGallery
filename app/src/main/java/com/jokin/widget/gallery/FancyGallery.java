@@ -382,10 +382,12 @@ public class FancyGallery extends CGallery {
 		t.clear();
 		t.setTransformationType(Transformation.TYPE_BOTH);
 
-		if (this.unselectedAlpha != 1) {
-			final float alphaAmount = 1 - (1 - this.unselectedAlpha)
-					* Math.abs(effectsAmount);
-			Log.d(TAG, String.format("alphaAmount:%f unselAlpha:%f", alphaAmount, unselectedAlpha));
+		if (this.unselectedAlpha != 1.0f) {
+			final float alphaAmount = 1.0f - (1.0f - this.unselectedAlpha)
+					* Math.abs(effectsAmount*5);
+			if (VERB) {
+				Log.d(TAG, String.format("AlphaValue: effectsAmount:%f unselAlpha:%f alphaAmount:%f", effectsAmount, unselectedAlpha, alphaAmount));
+			}
 			t.setAlpha(alphaAmount);
 		}
 

@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
         mFancyGallery.setOnItemClickListener(new CGalleryAdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(CGalleryAdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(mContext, "Click with pos:"+position+",id:"+id, Toast.LENGTH_LONG).show();;
+                Toast.makeText(mContext, "Click with pos:"+position+",id:"+id, Toast.LENGTH_SHORT).show();;
             }
         });
 

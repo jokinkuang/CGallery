@@ -17,8 +17,11 @@ import android.view.View;
 import android.view.animation.Transformation;
 import android.widget.SpinnerAdapter;
 
-public class FancyCoverFlow extends EcoGallery {
-	private static final String TAG = "CoverFlowGallery";
+/**
+ * An extensional Gallery
+ */
+public class FancyGallery extends CGallery {
+	private static final String TAG = FancyGallery.class.getSimpleName();
     private static boolean VERB = false;
 
 	public static final int ACTION_DISTANCE_AUTO = Integer.MAX_VALUE;
@@ -42,19 +45,19 @@ public class FancyCoverFlow extends EcoGallery {
 
     private Camera transformationCamera;
 
-	public FancyCoverFlow(Context context) {
+	public FancyGallery(Context context) {
 		super(context);
 		this.initialize();
 	}
 
-	public FancyCoverFlow(Context context, AttributeSet attrs) {
+	public FancyGallery(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.initialize();
 		this.applyXmlAttributes(attrs);
 	}
 
 	@SuppressLint("NewApi")
-	public FancyCoverFlow(Context context, AttributeSet attrs, int defStyle) {
+	public FancyGallery(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		if (Build.VERSION.SDK_INT >= 11) {
 			this.setLayerType(LAYER_TYPE_SOFTWARE, null);
@@ -99,7 +102,7 @@ public class FancyCoverFlow extends EcoGallery {
 		this.reflectionRatio = reflectionRatio;
 
 		if (this.getAdapter() != null) {
-			((FancyCoverFlowAdapter) this.getAdapter()).notifyDataSetChanged();
+			((FancyGalleryAdapter) this.getAdapter()).notifyDataSetChanged();
 		}
 	}
 
@@ -111,7 +114,7 @@ public class FancyCoverFlow extends EcoGallery {
 		this.reflectionGap = reflectionGap;
 
 		if (this.getAdapter() != null) {
-			((FancyCoverFlowAdapter) this.getAdapter()).notifyDataSetChanged();
+			((FancyGalleryAdapter) this.getAdapter()).notifyDataSetChanged();
 		}
 	}
 
@@ -122,7 +125,7 @@ public class FancyCoverFlow extends EcoGallery {
 	public void setReflectionEnabled(boolean reflectionEnabled) {
 		this.reflectionEnabled = reflectionEnabled;
 		if (this.getAdapter() != null) {
-			((FancyCoverFlowAdapter) this.getAdapter()).notifyDataSetChanged();
+			((FancyGalleryAdapter) this.getAdapter()).notifyDataSetChanged();
 		}
 	}
 
@@ -217,10 +220,10 @@ public class FancyCoverFlow extends EcoGallery {
 
     @Override
 	public void setAdapter(SpinnerAdapter adapter) {
-		if (!(adapter instanceof FancyCoverFlowAdapter)) {
-			throw new ClassCastException(FancyCoverFlow.class.getSimpleName()
+		if (!(adapter instanceof FancyGalleryAdapter)) {
+			throw new ClassCastException(FancyGallery.class.getSimpleName()
 					+ " only works in conjunction with a "
-					+ FancyCoverFlowAdapter.class.getSimpleName());
+					+ FancyGalleryAdapter.class.getSimpleName());
 		}
 
 		super.setAdapter(adapter);
@@ -345,7 +348,7 @@ public class FancyCoverFlow extends EcoGallery {
 			return super.getChildStaticTransformation(child, t);
 		}
 
-		FancyCoverFlowItemWrapper item = (FancyCoverFlowItemWrapper) child;
+		FancyGalleryItemWrapper item = (FancyGalleryItemWrapper) child;
 
 		preLeftOffset = getChildAt(0).getLeft();
 

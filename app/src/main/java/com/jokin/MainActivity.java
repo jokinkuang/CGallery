@@ -11,8 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.jokin.widget.gallery.EcoGalleryAdapterView;
-import com.jokin.widget.gallery.FancyCoverFlow;
+import com.jokin.widget.gallery.CGalleryAdapterView;
+import com.jokin.widget.gallery.FancyGallery;
 import com.jokin.widget.gallery.R;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TestActivity extends Activity {
+public class MainActivity extends Activity {
     DisplayImageOptions options;
 
     @Override
@@ -32,16 +32,11 @@ public class TestActivity extends Activity {
         super.onCreate(savedInstanceState);
         initImageLoader(getApplicationContext());
 
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.activity_main);
         init(savedInstanceState);
     }
 
     public void initImageLoader(Context context) {
-        // This configuration tuning is custom. You can tune every option, you
-        // may tune some of them,
-        // or you can create default configuration by
-        // ImageLoaderConfiguration.createDefault(this);
-        // method.
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
                 context).threadPriority(Thread.NORM_PRIORITY - 2)
                 .denyCacheImageMultipleSizesInMemory()
@@ -53,8 +48,6 @@ public class TestActivity extends Activity {
         ImageLoader.getInstance().init(config);
         ImageLoader.getInstance().clearDiscCache();
         ImageLoader.getInstance().clearMemoryCache();
-
-
         // 配置option
         options = new DisplayImageOptions.Builder()
                 .showStubImage(R.drawable.img0)
@@ -63,68 +56,13 @@ public class TestActivity extends Activity {
                 .cacheOnDisc(true).bitmapConfig(Bitmap.Config.RGB_565).build();
     }
 
-    private FancyCoverFlow fancyCoverFlow;
-    private ImageAdapter adapter;
-
-
-    private int cur_index = 0;
-    private int count_drawble;
-    private static int MSG_UPDATE = 1;
-    // 定时任务
-    private ScheduledExecutorService scheduledExecutorService;
-    private int start = 10;
-    private int time = 800;
-    private int sleep = 80;
-    private boolean stop = false;
-
-
-    private void reset() {
-        start = 10;
-        time = 1000;
-        sleep = 80;
-    }
-    // 通过handler来更新主界面
-    private Handler handler = new Handler() {
-
-        public void handleMessage(Message msg) {
-            if (msg.what == MSG_UPDATE) {
-                // fancyCoverFlow.setSelection(cur_index, true);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                            // fancyCoverFlow.moveToNext(time);
-
-                        //     while (!stop) {
-                    //         int rand = new Random().nextInt(14);
-                    //         Log.d("CGallery", String.format("rand:%d", rand));
-                    //     fancyCoverFlow.moveToNext(start);
-                            if (start <= 1000) {
-                                start += 10;
-                            }
-                    //         if (time >= 10) {
-                    //             time /= 2;
-                    //         }
-                    //         if (sleep >= 10) {
-                    //             sleep -= 1;
-                    //         }
-                    //         try {
-                    //             Thread.sleep(sleep);
-                    //         } catch (InterruptedException e) {
-                    //             break;
-                    //         }
-                    //     }
-                    }
-                }).start();
-
-            }
-        }
-    };
+    private FancyGallery mFancyGallery;
+    private ImageAdapter mAdapter;
 
     public void init(Bundle savedInstanceState) {
-        adapter = new ImageAdapter(this, ListInfo.getfilmInfo(), options, ImageLoader.getInstance());
-
-        fancyCoverFlow = (FancyCoverFlow) findViewById(R.id.fancyCoverFlow);
-        // fancyCoverFlow = new FancyCoverFlow(this);
+        mAdapter = new ImageAdapter(this, ListInfo.getfilmInfo(), options, ImageLoader.getInstance());
+        mFancyGallery = (FancyGallery) findViewById(R.id.fancyCoverFlow);
+        // mFancyGallery = new FancyCoverFlow(this);
         // LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         //
         // this.addView(gallery, parms);
@@ -132,30 +70,30 @@ public class TestActivity extends Activity {
 
 
         // item之间的间隙可以近似认为是imageview的宽度与缩放比例的乘积的一半
-        fancyCoverFlow.setSpacing(-80);
-        fancyCoverFlow.setAdapter(adapter);
+        mFancyGallery.setSpacing(-80);
+        mFancyGallery.setAdapter(mAdapter);
 
-        fancyCoverFlow.setOnMoveListener(new EcoGalleryAdapterView.OnMoveListener() {
+        mFancyGallery.setOnMoveListener(new CGalleryAdapterView.OnMoveListener() {
             @Override
-            public void onMoveFinish(EcoGalleryAdapterView<?> parent, View view, int position, long id) {
+            public void onMoveFinish(CGalleryAdapterView<?> parent, View view, int position, long id) {
                 // Message msg = handler.obtainMessage(MSG_UPDATE);
                 // handler.sendMessage(msg);
-                // fancyCoverFlow.moveToNext(2000, 10);
+                // mFancyGallery.moveToNext(2000, 10);
 
                 Log.d("", "moveFinish");
-                // fancyCoverFlow.moveToNext(time);
+                // mFancyGallery.moveToNext(time);
                 //         if (time > 50) {
                 //             time /= 1.2;
                 //         }
-                // fancyCoverFlow.startFling();
+                // mFancyGallery.startFling();
             }
         });
 
-        fancyCoverFlow.setOnItemSelectedListener(new EcoGalleryAdapterView.OnItemSelectedListener() {
+        mFancyGallery.setOnItemSelectedListener(new CGalleryAdapterView.OnItemSelectedListener() {
 
             @Override
-            public void onItemSelected(EcoGalleryAdapterView<?> parent, View view, int position, long id) {
-                int len = adapter.getData().size();
+            public void onItemSelected(CGalleryAdapterView<?> parent, View view, int position, long id) {
+                int len = mAdapter.getData().size();
                 Log.d("Gallery", "1 cur index:"+position);
 
                 // 使得所有的图像在[0.5, 1.5)*len之间，无限循环切换
@@ -170,17 +108,17 @@ public class TestActivity extends Activity {
                 //     refresh = true;
                 // }
                 // if (refresh) {
-                //     fancyCoverFlow.setSelection(position);
+                //     mFancyGallery.setSelection(position);
                 // }
 
-                // fancyCoverFlow.setSelection(position);
-                // adapter.notifyDataSetChanged();
+                // mFancyGallery.setSelection(position);
+                // mAdapter.notifyDataSetChanged();
                 cur_index = position;
                 Log.d("Gallery", "2 cur index:"+cur_index);
             }
 
             @Override
-            public void onNothingSelected(EcoGalleryAdapterView<?> parent) {
+            public void onNothingSelected(CGalleryAdapterView<?> parent) {
 
             }
 
@@ -190,7 +128,7 @@ public class TestActivity extends Activity {
                 cur_index = position;
                 Log.d("Gallery", "cur index:"+cur_index);
 
-                int len = adapter.getData().size();
+                int len = mAdapter.getData().size();
 
                 // 使得所有的图像在[0.5, 1.5)*len之间，无限循环切换
                 int first = len / 2, last = first + len;
@@ -199,8 +137,8 @@ public class TestActivity extends Activity {
                 while (position >= last)
                     position -= len;
 
-                fancyCoverFlow.setSelection(position);
-                adapter.notifyDataSetChanged();
+                mFancyGallery.setSelection(position);
+                mAdapter.notifyDataSetChanged();
 
                 //记录选择的图像索引
                 // if(cur_index >= len) cur_index -= len;
@@ -212,10 +150,10 @@ public class TestActivity extends Activity {
         });
 
         // 点击事件
-        fancyCoverFlow.setOnItemClickListener(new EcoGalleryAdapterView.OnItemClickListener() {
+        mFancyGallery.setOnItemClickListener(new CGalleryAdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(EcoGalleryAdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(CGalleryAdapterView<?> parent, View view, int position, long id) {
 
             }
 
@@ -229,13 +167,13 @@ public class TestActivity extends Activity {
         findViewById(R.id.startBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // fancyCoverFlow.moveToNext(start);
+                // mFancyGallery.moveToNext(start);
                 // startPlay();
                 // stop = false;
                 // Message msg = handler.obtainMessage(MSG_UPDATE);
                 // handler.sendMessage(msg);
-                Log.d("CGallery", "width:"+fancyCoverFlow.getWidth());
-                fancyCoverFlow.startFling(-100);
+                Log.d("CGallery", "width:"+ mFancyGallery.getWidth());
+                mFancyGallery.startFling(-100);
             }
         });
 
@@ -245,25 +183,25 @@ public class TestActivity extends Activity {
                 // stopPlay();
                 stop = true;
                 reset();
-                fancyCoverFlow.stop();
+                mFancyGallery.stop();
             }
         });
 
         findViewById(R.id.startFlipBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fancyCoverFlow.startFling(-100);
+                mFancyGallery.startFling(-100);
             }
         });
 
 
         // 开启自动轮播
-        count_drawble = adapter.getCount();
+        count_drawble = mAdapter.getCount();
         // startPlay();
-        // fancyCoverFlow.startFling();
-        fancyCoverFlow.setSelection(Integer.MAX_VALUE/2);
+        // mFancyGallery.startFling();
+        mFancyGallery.setSelection(Integer.MAX_VALUE/2);
 
-        fancyCoverFlow.setBackgroundColor(Color.GRAY);
+        mFancyGallery.setBackgroundColor(Color.GRAY);
 
         // TranslateAnimation translateAnimation = new TranslateAnimation(
         //         Animation.RELATIVE_TO_SELF, 0f,
@@ -271,7 +209,7 @@ public class TestActivity extends Activity {
         //         Animation.RELATIVE_TO_SELF, 0f,
         //         Animation.RELATIVE_TO_SELF, 0f);
         // translateAnimation.setDuration(15000);
-        // fancyCoverFlow.startAnimation(translateAnimation);
+        // mFancyGallery.startAnimation(translateAnimation);
     }
 
     /**
@@ -305,4 +243,60 @@ public class TestActivity extends Activity {
             cur_index++;
         }
     }
+
+
+    private int cur_index = 0;
+    private int count_drawble;
+    private static int MSG_UPDATE = 1;
+
+    // 定时任务
+    private ScheduledExecutorService scheduledExecutorService;
+    private int start = 10;
+    private int time = 800;
+    private int sleep = 80;
+    private boolean stop = false;
+
+
+    private void reset() {
+        start = 10;
+        time = 1000;
+        sleep = 80;
+    }
+
+    // 通过handler来更新主界面
+    private Handler handler = new Handler() {
+
+        public void handleMessage(Message msg) {
+            if (msg.what == MSG_UPDATE) {
+                // mFancyGallery.setSelection(cur_index, true);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // mFancyGallery.moveToNext(time);
+
+                        //     while (!stop) {
+                        //         int rand = new Random().nextInt(14);
+                        //         Log.d("CGallery", String.format("rand:%d", rand));
+                        //     mFancyGallery.moveToNext(start);
+                        if (start <= 1000) {
+                            start += 10;
+                        }
+                        //         if (time >= 10) {
+                        //             time /= 2;
+                        //         }
+                        //         if (sleep >= 10) {
+                        //             sleep -= 1;
+                        //         }
+                        //         try {
+                        //             Thread.sleep(sleep);
+                        //         } catch (InterruptedException e) {
+                        //             break;
+                        //         }
+                        //     }
+                    }
+                }).start();
+
+            }
+        }
+    };
 }

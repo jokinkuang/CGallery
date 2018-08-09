@@ -1,7 +1,5 @@
 package com.jokin;
 
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,19 +18,21 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
-import com.jokin.widget.gallery.EcoGallery;
-import com.jokin.widget.gallery.FancyCoverFlowAdapter;
+import com.jokin.widget.gallery.CGallery;
+import com.jokin.widget.gallery.FancyGalleryAdapter;
 import com.jokin.widget.gallery.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
+import java.util.List;
+
 /**
  * @author LittleLiByte
  * 
  */
-public class ImageAdapter extends FancyCoverFlowAdapter {
+public class ImageAdapter extends FancyGalleryAdapter {
 	private static final String TAG = "ImageAdapter";
 
 	private Context context;
@@ -87,7 +87,7 @@ public class ImageAdapter extends FancyCoverFlowAdapter {
 		if (reusableView == null) {
 			Log.d(TAG, String.format("[MISS] position %d", position));
             reusableView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_item, parent, false);
-			reusableView.setLayoutParams(new EcoGallery.LayoutParams(240, 240));
+			reusableView.setLayoutParams(new CGallery.LayoutParams(240, 480));
 
 			viewHolder = new ViewHolder();
 			viewHolder.imageView = (ImageView) reusableView.findViewById(R.id.imgv);

@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
 
-public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<SpinnerAdapter> {
-    private static final String TAG = "CGalleryAbsSpinner";
+public abstract class CGalleryAbsSpinner extends CGalleryAdapterView<SpinnerAdapter> {
+    private static final String TAG = CGalleryAbsSpinner.class.getSimpleName();
     private static final boolean VERB = false;
 
     SpinnerAdapter mAdapter;
@@ -40,16 +40,16 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
     /** Temporary frame to hold a child View's frame rectangle */
     private Rect mTouchFrame;
 
-    public EcoGalleryAbsSpinner(Context context) {
+    public CGalleryAbsSpinner(Context context) {
         super(context);
         initAbsSpinner();
     }
 
-    public EcoGalleryAbsSpinner(Context context, AttributeSet attrs) {
+    public CGalleryAbsSpinner(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public EcoGalleryAbsSpinner(Context context, AttributeSet attrs, int defStyle) {
+    public CGalleryAbsSpinner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initAbsSpinner();
 
@@ -337,7 +337,7 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
 
     void recycleAllViews() {
         int childCount = getChildCount();
-        final EcoGalleryAbsSpinner.RecycleBin recycleBin = mRecycler;
+        final CGalleryAbsSpinner.RecycleBin recycleBin = mRecycler;
 
         // All views go in recycler
         for (int i=0; i<childCount; i++) {
@@ -518,7 +518,7 @@ public abstract class EcoGalleryAbsSpinner extends EcoGalleryAdapterView<Spinner
         int position;
 
         /**
-         * Constructor called from {@link EcoGalleryAbsSpinner#onSaveInstanceState()}
+         * Constructor called from {@link CGalleryAbsSpinner#onSaveInstanceState()}
          */
         SavedState(Parcelable superState) {
             super(superState);

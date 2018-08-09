@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 
-public abstract class FancyCoverFlowAdapter extends BaseAdapter {
+public abstract class FancyGalleryAdapter extends BaseAdapter {
 
     // =============================================================================
     // Supertype overrides
@@ -38,17 +38,17 @@ public abstract class FancyCoverFlowAdapter extends BaseAdapter {
 
     @Override
     public final View getView(int i, View reusableView, ViewGroup viewGroup) {
-        FancyCoverFlow coverFlow = (FancyCoverFlow) viewGroup;
+        FancyGallery coverFlow = (FancyGallery) viewGroup;
 
         View wrappedView = null;
-        FancyCoverFlowItemWrapper coverFlowItem;
+        FancyGalleryItemWrapper coverFlowItem;
 
         if (reusableView != null) {
-            coverFlowItem = (FancyCoverFlowItemWrapper) reusableView;
+            coverFlowItem = (FancyGalleryItemWrapper) reusableView;
             wrappedView = coverFlowItem.getChildAt(0);
             coverFlowItem.removeAllViews();
         } else {
-            coverFlowItem = new FancyCoverFlowItemWrapper(viewGroup.getContext());
+            coverFlowItem = new FancyGalleryItemWrapper(viewGroup.getContext());
             coverFlowItem.setCoverFlowGallery(coverFlow);
         }
 
@@ -69,7 +69,7 @@ public abstract class FancyCoverFlowAdapter extends BaseAdapter {
 
 
         coverFlowItem.addView(wrappedView);
-        coverFlowItem.setLayoutParams(new EcoGallery.LayoutParams(wrappedView.getLayoutParams()));
+        coverFlowItem.setLayoutParams(new CGallery.LayoutParams(wrappedView.getLayoutParams()));
 
         return coverFlowItem;
     }

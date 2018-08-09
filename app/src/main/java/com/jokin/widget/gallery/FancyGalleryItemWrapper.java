@@ -48,13 +48,13 @@ import android.view.ViewGroup;
  * all times).
  */
 @SuppressWarnings("ConstantConditions")
-class FancyCoverFlowItemWrapper extends ViewGroup {
-	private static final String TAG = "CoverFlowGalleryItemWrapp";
+class FancyGalleryItemWrapper extends ViewGroup {
+	private static final String TAG = FancyGalleryItemWrapper.class.getSimpleName();
 
 	// =============================================================================
 	// Private members
 	// =============================================================================
-	private FancyCoverFlow gallery;
+	private FancyGallery gallery;
 
 	private float saturation = 1.0f; // 色饱和度
 
@@ -91,23 +91,23 @@ class FancyCoverFlowItemWrapper extends ViewGroup {
 	// Constructor
 	// =============================================================================
 
-	public FancyCoverFlowItemWrapper(Context context) {
+	public FancyGalleryItemWrapper(Context context) {
 		super(context);
 		this.init();
 	}
 
-	public FancyCoverFlowItemWrapper(Context context, AttributeSet attrs) {
+	public FancyGalleryItemWrapper(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.init();
 	}
 
-	public FancyCoverFlowItemWrapper(Context context, AttributeSet attrs,
-									 int defStyle) {
+	public FancyGalleryItemWrapper(Context context, AttributeSet attrs,
+								   int defStyle) {
 		super(context, attrs, defStyle);
 		this.init();
 	}
 
-	public void setCoverFlowGallery(FancyCoverFlow gallery) {
+	public void setCoverFlowGallery(FancyGallery gallery) {
 		this.gallery = gallery;
 	}
 

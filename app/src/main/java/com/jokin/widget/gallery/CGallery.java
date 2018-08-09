@@ -20,9 +20,12 @@ import android.widget.Scroller;
 
 import java.lang.reflect.Field;
 
-public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.OnGestureListener {
+/**
+ * A Basic Gallery View
+ */
+public class CGallery extends CGalleryAbsSpinner implements GestureDetector.OnGestureListener {
 
-	private static final String TAG = "CGallery";
+	private static final String TAG = CGallery.class.getSimpleName();
 
 	private static final boolean VERB = false;
 
@@ -145,15 +148,15 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
 	 */
 	private int mSelectedCenterOffset;
 
-	public EcoGallery(Context context) {
+	public CGallery(Context context) {
 		this(context, null);
 	}
 
-	public EcoGallery(Context context, AttributeSet attrs) {
+	public CGallery(Context context, AttributeSet attrs) {
 		this(context, attrs, R.attr.CGalleryStyle);
 	}
 
-	public EcoGallery(Context context, AttributeSet attrs, int defStyle) {
+	public CGallery(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
 		mBroken = true;
@@ -1419,7 +1422,7 @@ public class EcoGallery extends EcoGalleryAbsSpinner implements GestureDetector.
         moveToNext(duration);
 		setOnMoveListener(new OnMoveListener() {
 			@Override
-			public void onMoveFinish(EcoGalleryAdapterView<?> parent, View view, int position, long id) {
+			public void onMoveFinish(CGalleryAdapterView<?> parent, View view, int position, long id) {
 				moveToNext(duration);
 			}
 		});
